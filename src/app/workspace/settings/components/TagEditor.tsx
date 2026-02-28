@@ -127,23 +127,27 @@ export function TagEditor(input: TagEditorProps) {
                     </span>
                 ))}
 
-                <input
-                    id={input.id}
-                    value={draft}
-                    onChange={(event) => setDraft(normalizeTagValue(event.target.value))}
-                    onKeyDown={handleDraftKeyDown}
-                    onBlur={handleDraftBlur}
-                    disabled={input.disabled}
-                    placeholder={tags.length === 0 ? input.placeholder : 'Add more...'}
-                    className={`min-w-[140px] flex-1 border-0 bg-transparent px-1 py-1 text-sm font-medium outline-none placeholder:text-slate-400 disabled:cursor-not-allowed disabled:opacity-60 ${textMainClass}`}
-                />
+                {!input.disabled ? (
+                    <input
+                        id={input.id}
+                        value={draft}
+                        onChange={(event) => setDraft(normalizeTagValue(event.target.value))}
+                        onKeyDown={handleDraftKeyDown}
+                        onBlur={handleDraftBlur}
+                        disabled={input.disabled}
+                        placeholder={tags.length === 0 ? input.placeholder : 'Add more...'}
+                        className={`min-w-[140px] flex-1 border-0 bg-transparent px-1 py-1 text-sm font-medium outline-none placeholder:text-slate-400 disabled:cursor-not-allowed disabled:opacity-60 ${textMainClass}`}
+                    />
+                ) : tags.length === 0 ? (
+                    <span className={`text-sm italic opacity-40 ${textMainClass}`}>No categories set</span>
+                ) : null}
             </div>
 
             {input.description && !hideLabelAndDescription ? (
                 <p className={`mt-3 text-[11px] font-medium leading-relaxed ${input.textMutedClass}`}>{input.description}</p>
             ) : null}
 
-            {availableSuggestions.length > 0 ? (
+            {availableSuggestions.length > 0 && !input.disabled ? (
                 <div className="mt-4 flex flex-wrap gap-2">
                     {availableSuggestions.slice(0, input.suggestionLimit ?? 10).map((tag) => (
                         <button
