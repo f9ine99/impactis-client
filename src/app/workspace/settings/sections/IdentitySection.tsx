@@ -61,8 +61,8 @@ export function IdentitySection({
                     <Building2 className="h-4 w-4 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
                 </div>
                 <div>
-                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${labelClass}`}>Organization Identity</p>
-                    <p className={`text-[9px] font-bold ${textMutedClass}`}>Core profile and search properties</p>
+                    <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Organization Identity</p>
+                    <p className={`text-[11px] font-bold ${textMutedClass}`}>Core profile and search properties</p>
                 </div>
             </div>
 
@@ -70,10 +70,10 @@ export function IdentitySection({
                 {/* Organization Name Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 first:pt-0">
                     <div className="md:col-span-1">
-                        <label htmlFor="organizationName" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label htmlFor="organizationName" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Organization Name
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             The primary identity of your organization across the workspace.
                         </p>
                     </div>
@@ -92,10 +92,10 @@ export function IdentitySection({
                 {/* Location Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label htmlFor="organizationLocation" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label htmlFor="organizationLocation" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Headquarters
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Base of operations for matching and jurisdictional requirements.
                         </p>
                     </div>
@@ -114,10 +114,10 @@ export function IdentitySection({
                 {/* Logo Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label htmlFor="organizationLogoFile" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label htmlFor="organizationLogoFile" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Organization Logo
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Iconography for your brand profile. Square ratios work best.
                         </p>
                     </div>
@@ -131,9 +131,9 @@ export function IdentitySection({
                                     type="file"
                                     accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
                                     disabled={!canEdit || isPending}
-                                    className={`w-full rounded-xl border px-4 py-2.5 text-xs outline-none transition-all file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-500 file:px-3 file:py-1.5 file:text-[10px] file:font-black file:uppercase file:text-white hover:file:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                                    className={`w-full rounded-xl border px-4 py-2.5 text-xs outline-none transition-all file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-500 file:px-3 file:py-1.5 file:text-[11px] file:font-black file:uppercase file:text-white hover:file:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
                                 />
-                                <p className={`mt-2 text-[10px] font-medium ${textMutedClass}`}>JPG, PNG, WEBP, GIF, or SVG (max 2MB).</p>
+                                <p className={`mt-2 text-[11px] font-medium ${textMutedClass}`}>JPG, PNG, WEBP, GIF, or SVG (max 2MB).</p>
                             </div>
 
                             {defaultOrganizationLogoUrl ? (
@@ -142,7 +142,7 @@ export function IdentitySection({
                                         <AvatarImage src={defaultOrganizationLogoUrl} alt="Organization logo" />
                                         <AvatarFallback className="bg-slate-900 text-xs font-bold text-white">LOGO</AvatarFallback>
                                     </Avatar>
-                                    <label className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-tight cursor-pointer ${textMutedClass}`}>
+                                    <label className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-tight cursor-pointer ${textMutedClass}`}>
                                         <input
                                             type="checkbox"
                                             name="organizationLogoRemove"
@@ -161,10 +161,10 @@ export function IdentitySection({
                 {/* Categories Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Organization Categories
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Power discovery matching by tagging your primary focus areas.
                         </p>
                     </div>
@@ -194,10 +194,10 @@ export function IdentitySection({
                         {/* Investor Thesis Row */}
                         <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                             <div className="md:col-span-1">
-                                <label htmlFor="investorThesis" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                                <label htmlFor="investorThesis" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                                     Investment Thesis
                                 </label>
-                                <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                                <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                                     Detailed philosophy and mandate for your investment criteria.
                                 </p>
                             </div>
@@ -217,10 +217,10 @@ export function IdentitySection({
                         {/* Sector Focus Row */}
                         <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                             <div className="md:col-span-1">
-                                <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                                <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                                     Sector Focus
                                 </label>
-                                <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                                <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                                     Specific industries or verticals where you actively deploy capital.
                                 </p>
                             </div>
@@ -248,10 +248,10 @@ export function IdentitySection({
                         {/* Check Size Row */}
                         <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                             <div className="md:col-span-1">
-                                <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                                <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                                     Typical Check Size (USD)
                                 </label>
-                                <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                                <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                                     Minimum and maximum investment range per deal.
                                 </p>
                             </div>
@@ -288,16 +288,16 @@ export function IdentitySection({
                     <div className="md:col-span-1">
                         <div className="flex items-center gap-2">
                             <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                            <p className={`text-[10px] font-black uppercase tracking-widest ${labelClass}`}>Finalize Changes</p>
+                            <p className={`text-xs font-black uppercase tracking-widest ${labelClass}`}>Finalize Changes</p>
                         </div>
-                        <p className={`mt-1 text-[11px] font-bold ${textMutedClass}`}>Sync identity properties to the network.</p>
+                        <p className={`mt-1 text-sm font-bold ${textMutedClass}`}>Sync identity properties to the network.</p>
                     </div>
                     <div className="md:col-span-2">
                         <div className="flex flex-col gap-4">
                             <Button
                                 type="submit"
                                 disabled={!canEdit || isPending}
-                                className="w-fit h-10 px-8 font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
+                                className="w-fit h-10 px-8 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
                             >
                                 {isPending ? 'Synchronizing...' : 'Save Identity'}
                             </Button>

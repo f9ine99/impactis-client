@@ -117,13 +117,13 @@ export function ReadinessSection({
                         <Globe2 className="h-4 w-4 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
                     </div>
                     <div>
-                        <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${labelClass}`}>Readiness Engine</p>
-                        <p className={`text-[9px] font-bold ${textMutedClass}`}>Compliance and verification data</p>
+                        <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Readiness Engine</p>
+                        <p className={`text-[11px] font-bold ${textMutedClass}`}>Compliance and verification data</p>
                     </div>
                 </div>
                 <div className={`flex items-center gap-2.5 rounded-xl border px-3 py-1.5 shadow-sm ${isLight ? 'bg-white' : 'bg-slate-900/50'}`}>
-                    <span className={`text-[10px] font-black uppercase tracking-tight ${textMutedClass}`}>Readiness Index</span>
-                    <Badge variant="outline" className={`rounded-lg px-2 py-0.5 text-xs font-black ${readinessEligible ? 'border-emerald-500/50 text-emerald-600' : 'border-amber-500/50 text-amber-600'}`}>
+                    <span className={`text-[11px] font-black uppercase tracking-tight ${textMutedClass}`}>Readiness Index</span>
+                    <Badge variant="outline" className={`rounded-lg px-2 py-0.5 text-sm font-black ${readinessEligible ? 'border-emerald-500/50 text-emerald-600' : 'border-amber-500/50 text-amber-600'}`}>
                         {readinessScore}%
                     </Badge>
                 </div>
@@ -133,12 +133,12 @@ export function ReadinessSection({
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <div className="flex items-center gap-3">
-                            <p className={`text-xl font-black tracking-tight ${titleClass}`}>Profile Status</p>
-                            <Badge variant={readinessEligible ? 'success' : 'warning'} className="rounded-md uppercase">
+                            <p className={`text-2xl font-black tracking-tight ${titleClass}`}>Profile Status</p>
+                            <Badge variant={readinessEligible ? 'success' : 'warning'} className="rounded-md px-2 py-0.5 text-[10px] uppercase">
                                 {readinessEligible ? 'Eligible' : 'Pending'}
                             </Badge>
                         </div>
-                        <p className={`mt-1 text-xs font-medium ${textMutedClass}`}>
+                        <p className={`mt-1 text-sm font-medium ${textMutedClass}`}>
                             Complete core requirements to unlock full network discovery.
                         </p>
                     </div>
@@ -146,8 +146,8 @@ export function ReadinessSection({
 
                 <div className="mt-6">
                     <div className="mb-2 flex items-center justify-between px-1">
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${textMutedClass}`}>Engine Confidence</span>
-                        <span className={`text-[10px] font-black ${textMainClass}`}>{readinessScore}%</span>
+                        <span className={`text-[11px] font-black uppercase tracking-widest ${textMutedClass}`}>Engine Confidence</span>
+                        <span className={`text-xs font-black ${textMainClass}`}>{readinessScore}%</span>
                     </div>
                     <div className={`h-2.5 w-full overflow-hidden rounded-full ${isLight ? 'bg-slate-200' : 'bg-slate-800'}`}>
                         <div className={`h-full transition-all duration-1000 ease-out ${readinessBarColor}`} style={{ width: `${readinessScore}%` }} />
@@ -157,10 +157,10 @@ export function ReadinessSection({
                 <div className="mt-6 grid gap-4 sm:grid-cols-3">
                     {readinessChecks.map((check) => (
                         <div key={check.label} className={`rounded-2xl border p-4 shadow-sm transition-all ${isLight ? 'bg-white' : 'bg-slate-950/40'}`}>
-                            <p className={`text-[10px] font-black uppercase tracking-widest ${labelClass}`}>{check.label}</p>
+                            <p className={`text-[11px] font-black uppercase tracking-widest ${labelClass}`}>{check.label}</p>
                             <div className="mt-2 flex items-center gap-2">
                                 <div className={`h-1.5 w-1.5 rounded-full ${check.done ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-300'}`} />
-                                <p className={`text-xs font-bold ${check.done ? textMainClass : textMutedClass}`}>
+                                <p className={`text-sm font-bold ${check.done ? textMainClass : textMutedClass}`}>
                                     {check.done ? 'Verified' : 'Required'}
                                 </p>
                             </div>
@@ -173,8 +173,8 @@ export function ReadinessSection({
                         <div className="mt-0.5 rounded-full bg-amber-500 p-0.5">
                             <span className="block h-1.5 w-1.5 rounded-full bg-white" />
                         </div>
-                        <p className={`text-[11px] font-medium text-amber-800/80`}>
-                            <span className="font-bold uppercase tracking-tight">Remaining:</span> {readinessMissingSteps.join(', ')}
+                        <p className={`text-sm font-medium text-amber-800/80`}>
+                            <span className="font-bold uppercase tracking-tight text-xs">Remaining:</span> {readinessMissingSteps.join(', ')}
                         </p>
                     </div>
                 ) : null}
@@ -184,10 +184,10 @@ export function ReadinessSection({
                 {/* Official Website Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 first:pt-0">
                     <div className="md:col-span-1">
-                        <label htmlFor="startupWebsiteUrl" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label htmlFor="startupWebsiteUrl" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Official Website
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             The primary digital storefront for your organization.
                         </p>
                     </div>
@@ -206,10 +206,10 @@ export function ReadinessSection({
                 {/* Pitch Deck Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Pitch Deck
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Core narrative for readiness scoring. PDF or Video up to 50MB.
                         </p>
                     </div>
@@ -241,10 +241,10 @@ export function ReadinessSection({
                 {/* Team Strengths Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label htmlFor="startupTeamOverview" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label htmlFor="startupTeamOverview" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Team Core Strengths
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Highlight domain expertise and technical background.
                         </p>
                     </div>
@@ -264,17 +264,17 @@ export function ReadinessSection({
                 {/* Foundational Data Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Foundational Data
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Core operational metadata for matching filters.
                         </p>
                     </div>
                     <div className="md:col-span-2">
                         <div className="grid gap-4 sm:grid-cols-2 max-w-xl">
                             <div>
-                                <label htmlFor="startupCompanyStage" className={`mb-1.5 block text-[8px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Stage</label>
+                                <label htmlFor="startupCompanyStage" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Stage</label>
                                 <select
                                     id="startupCompanyStage"
                                     name="startupCompanyStage"
@@ -292,7 +292,7 @@ export function ReadinessSection({
                                 </select>
                             </div>
                             <div>
-                                <label htmlFor="startupFoundingYear" className={`mb-1.5 block text-[8px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Founding Year</label>
+                                <label htmlFor="startupFoundingYear" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Founding Year</label>
                                 <input
                                     id="startupFoundingYear"
                                     name="startupFoundingYear"
@@ -312,10 +312,10 @@ export function ReadinessSection({
                 {/* Traction Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label htmlFor="startupTractionSummary" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label htmlFor="startupTractionSummary" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Traction Pulse
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Quantifiable growth metrics and key milestones.
                         </p>
                     </div>
@@ -335,10 +335,10 @@ export function ReadinessSection({
                 {/* Verification Assets Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Verification Assets
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Hard documentation for high-confidence engine verification.
                         </p>
                     </div>
@@ -392,21 +392,21 @@ export function ReadinessSection({
                     <div className="md:col-span-1">
                         <div className="flex items-center gap-2">
                             <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                            <p className={`text-[10px] font-black uppercase tracking-widest ${labelClass}`}>Finalize Engine Sync</p>
+                            <p className={`text-xs font-black uppercase tracking-widest ${labelClass}`}>Finalize Engine Sync</p>
                         </div>
-                        <p className={`mt-1 text-[11px] font-bold ${textMutedClass}`}>Recalculate readiness scores upon saving.</p>
+                        <p className={`mt-1 text-sm font-bold ${textMutedClass}`}>Recalculate readiness scores upon saving.</p>
                     </div>
                     <div className="md:col-span-2">
                         <div className="flex flex-col gap-4">
                             <Button
                                 type="submit"
                                 disabled={!canEdit || isPending}
-                                className="w-fit h-10 px-8 font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
+                                className="w-fit h-10 px-8 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
                             >
                                 {isPending ? 'Synchronizing Engine...' : 'Save Readiness'}
                             </Button>
                             {!canEdit ? (
-                                <p className="text-[10px] font-bold text-amber-600/80">Only owners can manage readiness assets.</p>
+                                <p className="text-[11px] font-bold text-amber-600/80">Only owners can manage readiness assets.</p>
                             ) : null}
                             {state.error ? (
                                 <div className="max-w-xl">

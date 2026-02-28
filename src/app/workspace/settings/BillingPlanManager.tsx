@@ -151,14 +151,14 @@ export default function BillingPlanManager({
                         <Sparkles className="h-4 w-4 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
                     </div>
                     <div>
-                        <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${textMutedClass}`}>Subscription Plan</p>
-                        <p className={`text-[10px] font-bold ${textMutedClass}`}>Choose and manage your environment tier</p>
+                        <p className={`text-xs font-black uppercase tracking-[0.2em] ${textMutedClass}`}>Subscription Plan</p>
+                        <p className={`text-[11px] font-bold ${textMutedClass}`}>Choose and manage your environment tier</p>
                     </div>
                 </div>
                 {currentPlan ? (
                     <div className={`flex items-center gap-2.5 rounded-xl border px-3 py-1.5 shadow-sm ${isLight ? 'bg-white' : 'bg-slate-900/50'}`}>
-                        <span className={`text-[10px] font-black uppercase tracking-tight ${textMutedClass}`}>Active Plan</span>
-                        <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/5 text-emerald-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">
+                        <span className={`text-[11px] font-black uppercase tracking-tight ${textMutedClass}`}>Active Plan</span>
+                        <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/5 text-emerald-500 px-2 py-0.5 text-[11px] font-black uppercase tracking-widest">
                             {currentPlan.plan.name}
                         </Badge>
                     </div>
@@ -172,10 +172,10 @@ export default function BillingPlanManager({
                 {/* Plan Selection Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 first:pt-0">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${textMutedClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${textMutedClass}`}>
                             Available Plans
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Select a tier that matches your organization's scale and required features.
                         </p>
                     </div>
@@ -201,20 +201,20 @@ export default function BillingPlanManager({
                                     >
                                         <div className="flex flex-col gap-1">
                                             <div className="flex items-center justify-between gap-2">
-                                                <p className={`text-xs font-black uppercase tracking-tight ${titleClass}`}>{plan.display_name}</p>
-                                                {isCurrent ? <Badge variant="success" className="h-4 px-1 text-[8px] font-black uppercase tracking-tighter">Active</Badge> : null}
+                                                <p className={`text-sm font-black uppercase tracking-tight ${titleClass}`}>{plan.display_name}</p>
+                                                {isCurrent ? <Badge variant="success" className="h-4 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-tighter">Active</Badge> : null}
                                             </div>
                                             <div className="flex items-center gap-1.5">
-                                                <p className={`text-[10px] font-black text-emerald-500`}>
+                                                <p className={`text-[11px] font-black text-emerald-500`}>
                                                     {monthlyLabel || 'FREE'}
                                                 </p>
                                                 <div className="h-1 w-1 rounded-full bg-slate-300" />
-                                                <Badge variant="outline" className="h-4 border-slate-200 px-1 text-[8px] font-bold text-slate-500">Tier {plan.tier}</Badge>
+                                                <Badge variant="outline" className="h-4 border-slate-200 px-1.5 py-0.5 text-[9px] font-bold text-slate-500">Tier {plan.tier}</Badge>
                                             </div>
                                         </div>
                                         <div className="mt-3 space-y-1 opacity-80">
                                             {plan.features.slice(0, 3).map((feature) => (
-                                                <p key={feature.key} className={`text-[9px] font-bold leading-tight ${textMutedClass}`}>
+                                                <p key={feature.key} className={`text-[11px] font-bold leading-tight ${textMutedClass}`}>
                                                     • {feature.label}
                                                 </p>
                                             ))}
@@ -229,10 +229,10 @@ export default function BillingPlanManager({
                 {/* Billing Interval Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${textMutedClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${textMutedClass}`}>
                             Billing Interval
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Choose between flexible monthly billing or discounted annual payments.
                         </p>
                     </div>
@@ -255,14 +255,14 @@ export default function BillingPlanManager({
                                                 : 'border-slate-800 bg-slate-900 text-slate-400 hover:bg-slate-800')
                                             }`}
                                     >
-                                        <span className="text-[10px]">{label}</span>
+                                        <span className="text-[11px]">{label}</span>
                                         <CircleDollarSign className={`h-4 w-4 ${isSelectedInterval ? 'text-emerald-500' : 'opacity-40'}`} />
                                     </button>
                                 )
                             })}
                         </div>
                         {availableIntervals.length < 1 ? (
-                            <p className={`mt-3 text-[10px] font-bold text-amber-600 italic`}>
+                            <p className={`mt-3 text-[11px] font-bold text-amber-600 italic`}>
                                 No active billing intervals for the selected plan.
                             </p>
                         ) : null}
@@ -274,21 +274,21 @@ export default function BillingPlanManager({
                     <div className="md:col-span-1">
                         <div className="flex items-center gap-2">
                             <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                            <p className={`text-[10px] font-black uppercase tracking-widest ${textMutedClass}`}>Finalize Subscription</p>
+                            <p className={`text-xs font-black uppercase tracking-widest ${textMutedClass}`}>Finalize Subscription</p>
                         </div>
-                        <p className={`mt-1 text-[11px] font-bold ${textMutedClass}`}>Changes apply immediately or via Stripe Portal.</p>
+                        <p className={`mt-1 text-sm font-bold ${textMutedClass}`}>Changes apply immediately or via Stripe Portal.</p>
                     </div>
                     <div className="md:col-span-2">
                         <div className="flex flex-col gap-4">
                             <Button
                                 type="submit"
                                 disabled={!canManage || isPending || !selectedPlan || !selectedInterval}
-                                className="w-fit h-10 px-8 font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
+                                className="w-fit h-10 px-8 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
                             >
                                 {isPending ? 'Synchronizing...' : 'Update Subscription'}
                             </Button>
                             {!canManage ? (
-                                <p className="text-[10px] font-bold text-amber-600/80 uppercase tracking-tighter">Requires administrator privileges.</p>
+                                <p className="text-[11px] font-bold text-amber-600/80 uppercase tracking-tighter">Requires administrator privileges.</p>
                             ) : null}
                             {notice.error ? (
                                 <div className="max-w-xl">
@@ -308,15 +308,15 @@ export default function BillingPlanManager({
             <form action={portalAction} className="mt-8 border-t border-slate-200/5 pt-8">
                 <div className="grid gap-4 md:grid-cols-3 md:gap-8 items-center">
                     <div className="md:col-span-1">
-                        <p className={`text-[10px] font-black uppercase tracking-widest ${textMutedClass}`}>External Controls</p>
-                        <p className={`mt-1 text-[11px] font-bold ${textMutedClass}`}>Manage invoices and payment methods.</p>
+                        <p className={`text-xs font-black uppercase tracking-widest ${textMutedClass}`}>External Controls</p>
+                        <p className={`mt-1 text-sm font-bold ${textMutedClass}`}>Manage invoices and payment methods.</p>
                     </div>
                     <div className="md:col-span-2">
                         <Button
                             type="submit"
                             variant="outline"
                             disabled={!canManage || isPortalPending}
-                            className="w-fit h-9 px-6 text-[10px] font-black uppercase tracking-[0.12em] border-slate-200/60 hover:bg-slate-100 transition-all"
+                            className="w-fit h-9 px-6 text-[11px] font-black uppercase tracking-[0.12em] border-slate-200/60 hover:bg-slate-100 transition-all"
                         >
                             {isPortalPending ? 'Opening Portal...' : 'Open Stripe Billing Portal'}
                         </Button>

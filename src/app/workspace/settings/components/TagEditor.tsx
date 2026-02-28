@@ -103,7 +103,7 @@ export function TagEditor(input: TagEditorProps) {
     return (
         <div className={hideLabelAndDescription ? '' : 'sm:col-span-2'}>
             {!hideLabelAndDescription && (
-                <label htmlFor={input.id} className={`mb-3 block text-[10px] font-black uppercase tracking-widest ${input.labelClass}`}>
+                <label htmlFor={input.id} className={`mb-3 block text-xs font-black uppercase tracking-widest ${input.labelClass}`}>
                     {input.label}
                 </label>
             )}
@@ -140,7 +140,7 @@ export function TagEditor(input: TagEditorProps) {
             </div>
 
             {input.description && !hideLabelAndDescription ? (
-                <p className={`mt-3 text-[10px] font-medium leading-relaxed ${input.textMutedClass}`}>{input.description}</p>
+                <p className={`mt-3 text-[11px] font-medium leading-relaxed ${input.textMutedClass}`}>{input.description}</p>
             ) : null}
 
             {availableSuggestions.length > 0 ? (

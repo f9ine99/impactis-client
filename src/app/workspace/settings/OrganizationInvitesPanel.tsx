@@ -67,25 +67,25 @@ export default function OrganizationInvitesPanel({
                     <Users className="h-4 w-4 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
                 </div>
                 <div>
-                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${labelClass}`}>Member Access & Invites</p>
-                    <p className={`text-[10px] font-bold ${textMutedClass}`}>Securely manage organization members and active invitations.</p>
+                    <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Member Access & Invites</p>
+                    <p className={`text-[11px] font-bold ${textMutedClass}`}>Securely manage organization members and active invitations.</p>
                 </div>
             </div>
             <div className="divide-y divide-slate-200/5">
                 {/* Invite Form Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 first:pt-0">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Invite New Member
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Expand your organization by inviting trusted teammates.
                         </p>
                     </div>
                     <div className="md:col-span-2">
                         <form action={formAction} className="flex flex-col gap-4 max-w-xl">
                             <div>
-                                <label htmlFor="invitedEmail" className={`mb-1.5 block text-[8px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Email Address</label>
+                                <label htmlFor="invitedEmail" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>Email Address</label>
                                 <input
                                     id="invitedEmail"
                                     name="invitedEmail"
@@ -98,7 +98,7 @@ export default function OrganizationInvitesPanel({
                             </div>
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div>
-                                    <label htmlFor="memberRole" className={`mb-1.5 block text-[8px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Assigned Role</label>
+                                    <label htmlFor="memberRole" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>Assigned Role</label>
                                     <select
                                         id="memberRole"
                                         name="memberRole"
@@ -111,7 +111,7 @@ export default function OrganizationInvitesPanel({
                                     </select>
                                 </div>
                                 <div>
-                                    <label htmlFor="expiresInDays" className={`mb-1.5 block text-[8px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Link Validity (Days)</label>
+                                    <label htmlFor="expiresInDays" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>Link Validity (Days)</label>
                                     <input
                                         id="expiresInDays"
                                         name="expiresInDays"
@@ -171,8 +171,8 @@ export default function OrganizationInvitesPanel({
                                     <p className="font-bold">{notice.success}</p>
                                     {state.inviteLink && (
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700/70">Secure Invite Link</p>
-                                            <div className="flex items-center gap-2 rounded-lg border border-emerald-200/50 bg-white/80 px-3 py-2 font-mono text-[11px] text-emerald-900 shadow-sm">
+                                            <p className="text-[11px] font-black uppercase tracking-widest text-emerald-700/70">Secure Invite Link</p>
+                                            <div className="flex items-center gap-2 rounded-lg border border-emerald-200/50 bg-white/80 px-3 py-2 font-mono text-xs text-emerald-900 shadow-sm">
                                                 <span className="truncate">{state.inviteLink}</span>
                                             </div>
                                         </div>
@@ -186,17 +186,17 @@ export default function OrganizationInvitesPanel({
                 {/* Pending Invites Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Active Invitations
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Monitor and manage secure access tokens currently in circulation.
                         </p>
                     </div>
                     <div className="md:col-span-2">
                         <div className={`rounded-2xl border overflow-hidden max-w-xl ${mutedPanelClass}`}>
                             <div className="flex items-center justify-between border-b border-slate-200/50 px-4 py-2.5 bg-slate-50/30">
-                                <p className={`text-[9px] font-black uppercase tracking-[0.1em] ${labelClass}`}>
+                                <p className={`text-[10px] font-black uppercase tracking-[0.1em] ${labelClass}`}>
                                     Pending ({pendingInvites.length})
                                 </p>
                             </div>

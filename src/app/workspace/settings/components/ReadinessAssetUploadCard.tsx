@@ -66,7 +66,7 @@ export function ReadinessAssetUploadCard(input: ReadinessAssetUploadCardProps) {
                         <p className={`text-xs font-bold uppercase tracking-[0.12em] ${textMainClass}`}>
                             Drag and drop or click to upload
                         </p>
-                        <p className={`mt-1 text-[11px] ${textMutedClass}`}>{input.hint}</p>
+                        <p className={`mt-1 text-xs ${textMutedClass}`}>{input.hint}</p>
                     </div>
                 </div>
             </label>

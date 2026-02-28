@@ -56,8 +56,8 @@ export function DiscoverySection({
                     <Rocket className="h-4 w-4 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
                 </div>
                 <div>
-                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${labelClass}`}>Discovery Campaign</p>
-                    <p className={`text-[10px] font-bold ${textMutedClass}`}>Public presence and network visibility</p>
+                    <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Discovery Campaign</p>
+                    <p className={`text-[11px] font-bold ${textMutedClass}`}>Public presence and network visibility</p>
                 </div>
             </div>
 
@@ -65,10 +65,10 @@ export function DiscoverySection({
                 {/* Campaign Headline Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 first:pt-0">
                     <div className="md:col-span-1">
-                        <label htmlFor="startupPostTitle" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label htmlFor="startupPostTitle" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Campaign Headline
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             A high-impact title that captures attention in discovery feeds.
                         </p>
                     </div>
@@ -87,10 +87,10 @@ export function DiscoverySection({
                 {/* Executive Summary Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label htmlFor="startupPostSummary" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label htmlFor="startupPostSummary" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Executive Summary
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Briefly describe the problem, traction, and vision.
                         </p>
                     </div>
@@ -110,17 +110,17 @@ export function DiscoverySection({
                 {/* Logistics Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Campaign Logistics
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Specify the current stage and primary base of operations.
                         </p>
                     </div>
                     <div className="md:col-span-2">
                         <div className="grid gap-4 sm:grid-cols-2 max-w-xl">
                             <div>
-                                <label htmlFor="startupPostStage" className={`mb-1.5 block text-[8px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Current Stage</label>
+                                <label htmlFor="startupPostStage" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>Current Stage</label>
                                 <input
                                     id="startupPostStage"
                                     name="startupPostStage"
@@ -131,7 +131,7 @@ export function DiscoverySection({
                                 />
                             </div>
                             <div>
-                                <label htmlFor="startupPostLocation" className={`mb-1.5 block text-[8px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Primary Location</label>
+                                <label htmlFor="startupPostLocation" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>Primary Location</label>
                                 <input
                                     id="startupPostLocation"
                                     name="startupPostLocation"
@@ -148,10 +148,10 @@ export function DiscoverySection({
                 {/* Categories Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Discovery Categories
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Target specific investor feeds with precise categorization.
                         </p>
                     </div>
@@ -179,10 +179,10 @@ export function DiscoverySection({
                 {/* Status Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label htmlFor="startupPostStatus" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label htmlFor="startupPostStatus" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Visibility Status
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Control how your campaign appears across the network.
                         </p>
                     </div>
@@ -205,21 +205,21 @@ export function DiscoverySection({
                     <div className="md:col-span-1">
                         <div className="flex items-center gap-2">
                             <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                            <p className={`text-[10px] font-black uppercase tracking-widest ${labelClass}`}>Finalize Campaign</p>
+                            <p className={`text-xs font-black uppercase tracking-widest ${labelClass}`}>Finalize Campaign</p>
                         </div>
-                        <p className={`mt-1 text-[11px] font-bold ${textMutedClass}`}>Sync campaign properties to discovery feeds.</p>
+                        <p className={`mt-1 text-sm font-bold ${textMutedClass}`}>Sync campaign properties to discovery feeds.</p>
                     </div>
                     <div className="md:col-span-2">
                         <div className="flex flex-col gap-4">
                             <Button
                                 type="submit"
                                 disabled={!canEdit || isPending}
-                                className="w-fit h-10 px-8 font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
+                                className="w-fit h-10 px-8 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
                             >
                                 {isPending ? 'Synchronizing...' : 'Save Campaign'}
                             </Button>
                             {!canEdit ? (
-                                <p className="text-[10px] font-bold text-amber-600/80">Only owners can manage discovery campaigns.</p>
+                                <p className="text-[11px] font-bold text-amber-600/80">Only owners can manage discovery campaigns.</p>
                             ) : null}
                             {state.error ? (
                                 <div className="max-w-xl">
