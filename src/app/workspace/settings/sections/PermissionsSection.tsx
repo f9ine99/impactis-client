@@ -24,8 +24,8 @@ export default function PermissionsSection(input: PermissionsSectionProps) {
                     <ShieldCheck className="h-4 w-4 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
                 </div>
                 <div>
-                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${labelClass}`}>Governance & Permissions</p>
-                    <p className={`text-[10px] font-bold ${textMutedClass}`}>Review access control and organizational standing.</p>
+                    <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Governance & Permissions</p>
+                    <p className={`text-[11px] font-bold ${textMutedClass}`}>Review access control and organizational standing.</p>
                 </div>
             </div>
 
@@ -33,27 +33,27 @@ export default function PermissionsSection(input: PermissionsSectionProps) {
                 {/* Organization Snapshot Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 first:pt-0">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Organization Snapshot
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
-                            Core system properties defining your organization's type and standing.
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
+                            Core system properties defining your organization&apos;s type and standing.
                         </p>
                     </div>
                     <div className="md:col-span-2">
                         <div className="grid gap-4 sm:grid-cols-2 max-w-xl">
                             <div className={`rounded-2xl border p-4 ${mutedPanelClass}`}>
-                                <p className={`text-[9px] font-black uppercase tracking-widest ${titleMutedClass}`}>Type</p>
-                                <p className={`mt-1 text-sm font-black capitalize ${textMainClass}`}>{input.organizationType}</p>
+                                <p className={`text-[11px] font-black uppercase tracking-widest ${titleMutedClass}`}>Type</p>
+                                <p className={`mt-1 text-base font-black capitalize ${textMainClass}`}>{input.organizationType}</p>
                             </div>
                             <div className={`rounded-2xl border p-4 ${mutedPanelClass}`}>
-                                <p className={`text-[9px] font-black uppercase tracking-widest ${titleMutedClass}`}>Your Role</p>
-                                <p className={`mt-1 text-sm font-black capitalize ${textMainClass}`}>{input.memberRole}</p>
+                                <p className={`text-[11px] font-black uppercase tracking-widest ${titleMutedClass}`}>Your Role</p>
+                                <p className={`mt-1 text-base font-black capitalize ${textMainClass}`}>{input.memberRole}</p>
                             </div>
                             <div className="sm:col-span-2">
                                 <div className={`rounded-2xl border p-4 ${mutedPanelClass}`}>
-                                    <p className={`text-[9px] font-black uppercase tracking-widest ${titleMutedClass}`}>Industry Scope</p>
-                                    <p className={`mt-1 text-xs font-bold ${textMainClass}`}>{input.industryTags}</p>
+                                    <p className={`text-[11px] font-black uppercase tracking-widest ${titleMutedClass}`}>Industry Scope</p>
+                                    <p className={`mt-1 text-sm font-bold ${textMainClass}`}>{input.industryTags}</p>
                                 </div>
                             </div>
                         </div>
@@ -63,10 +63,10 @@ export default function PermissionsSection(input: PermissionsSectionProps) {
                 {/* Permission Rules Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Permission Rules
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Governance logic currently enforced across your organization.
                         </p>
                     </div>
@@ -77,8 +77,8 @@ export default function PermissionsSection(input: PermissionsSectionProps) {
                                     <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                                 </div>
                                 <div>
-                                    <p className={`text-xs font-black ${textMainClass}`}>Owner-only commands</p>
-                                    <p className={`mt-0.5 text-[11px] font-medium leading-relaxed ${textMutedClass}`}>Update organization settings, manage invites, and govern identity assets.</p>
+                                    <p className={`text-sm font-black ${textMainClass}`}>Owner-only commands</p>
+                                    <p className={`mt-0.5 text-sm font-medium leading-relaxed ${textMutedClass}`}>Update organization settings, manage invites, and govern identity assets.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4 items-start">
@@ -86,8 +86,8 @@ export default function PermissionsSection(input: PermissionsSectionProps) {
                                     <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                                 </div>
                                 <div>
-                                    <p className={`text-xs font-black ${textMainClass}`}>Active membership gate</p>
-                                    <p className={`mt-0.5 text-[11px] font-medium leading-relaxed ${textMutedClass}`}>Only active members can view workspace settings, rooms, and collaboration data.</p>
+                                    <p className={`text-sm font-black ${textMainClass}`}>Active membership gate</p>
+                                    <p className={`mt-0.5 text-sm font-medium leading-relaxed ${textMutedClass}`}>Only active members can view workspace settings, rooms, and collaboration data.</p>
                                 </div>
                             </div>
                         </div>
