@@ -7,6 +7,7 @@ import {
     LayoutDashboard,
     UserRound,
     Settings2,
+    LifeBuoy,
     LogOut
 } from 'lucide-react'
 import Link from 'next/link'
@@ -142,32 +143,55 @@ export default function WorkspaceLayoutShell({
                             </button>
                         </div>
 
-                        <div className="mt-12 space-y-2">
-                            <SidebarNavLink
-                                href="/workspace"
-                                label="Overview"
-                                icon={LayoutDashboard}
-                                active
-                                collapsed={isCollapsed}
-                                activeClassName={navActiveClass}
-                                idleClassName={navIdleClass}
-                            />
-                            <SidebarNavLink
-                                href="/workspace/profile"
-                                label="Profile"
-                                icon={UserRound}
-                                collapsed={isCollapsed}
-                                activeClassName={navActiveClass}
-                                idleClassName={navIdleClass}
-                            />
-                            <SidebarNavLink
-                                href="/workspace/settings"
-                                label="Organization Settings"
-                                icon={Settings2}
-                                collapsed={isCollapsed}
-                                activeClassName={navActiveClass}
-                                idleClassName={navIdleClass}
-                            />
+                        <div className="mt-12 space-y-10">
+                            <div className="space-y-3">
+                                <p className={`px-4 text-[10px] font-bold uppercase tracking-widest ${textMutedClass} opacity-50 ${isCollapsed ? 'hidden' : 'block'}`}>
+                                    Main Menu
+                                </p>
+                                <div className="space-y-1">
+                                    <SidebarNavLink
+                                        href="/workspace"
+                                        label="Overview"
+                                        icon={LayoutDashboard}
+                                        active
+                                        collapsed={isCollapsed}
+                                        activeClassName={navActiveClass}
+                                        idleClassName={navIdleClass}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <p className={`px-4 text-[10px] font-bold uppercase tracking-widest ${textMutedClass} opacity-50 ${isCollapsed ? 'hidden' : 'block'}`}>
+                                    System Settings
+                                </p>
+                                <div className="space-y-1">
+                                    <SidebarNavLink
+                                        href="/workspace/profile"
+                                        label="Account"
+                                        icon={UserRound}
+                                        collapsed={isCollapsed}
+                                        activeClassName={navActiveClass}
+                                        idleClassName={navIdleClass}
+                                    />
+                                    <SidebarNavLink
+                                        href="/workspace/settings"
+                                        label="Settings"
+                                        icon={Settings2}
+                                        collapsed={isCollapsed}
+                                        activeClassName={navActiveClass}
+                                        idleClassName={navIdleClass}
+                                    />
+                                    <SidebarNavLink
+                                        href="/workspace/help"
+                                        label="Help & Support"
+                                        icon={LifeBuoy}
+                                        collapsed={isCollapsed}
+                                        activeClassName={navActiveClass}
+                                        idleClassName={navIdleClass}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
