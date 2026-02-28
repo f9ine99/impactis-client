@@ -262,12 +262,12 @@ function CurrentPlanSidebarCard(input: {
         return (
             <div className={`flex flex-col gap-3 rounded-[2.5rem] border p-6 ${input.panelClass} backdrop-blur-xl`}>
                 <div className="flex items-center justify-between">
-                    <p className={`text-[10px] font-black uppercase tracking-widest ${input.textMainClass}`}>Current Plan</p>
-                    <Badge variant="secondary" className="rounded-lg px-2 py-0 text-[8px] font-black uppercase">
+                    <p className={`text-xs font-black uppercase tracking-widest ${input.textMainClass}`}>Current Plan</p>
+                    <Badge variant="secondary" className="rounded-lg px-2 py-0 text-[10px] font-black uppercase">
                         Missing
                     </Badge>
                 </div>
-                <p className={`text-[11px] leading-relaxed ${input.textMutedClass}`}>
+                <p className={`text-sm leading-relaxed ${input.textMutedClass}`}>
                     No subscription record was found for this organization.
                 </p>
             </div>
@@ -288,38 +288,31 @@ function CurrentPlanSidebarCard(input: {
         : 'Not scheduled'
 
     return (
-        <div className={`flex flex-col gap-4 rounded-[2.5rem] border p-6 ${input.panelClass} backdrop-blur-xl`}>
-            <div className="flex items-center justify-between gap-2">
-                <div>
-                    <p className={`text-[10px] font-black uppercase tracking-widest ${input.textMutedClass}`}>Current Plan</p>
-                    <p className={`text-lg font-black tracking-tight ${input.textMainClass}`}>{input.currentPlan.plan.name}</p>
+        <div className="flex flex-col gap-3 px-4">
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${input.isLight ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-950 border-slate-800'}`}>
+                        <CircleDollarSign className="h-4 w-4 text-emerald-500" />
+                    </div>
+                    <div className="min-w-0">
+                        <p className={`text-[10px] font-black uppercase tracking-widest opacity-60 ${input.textMutedClass}`}>Current Tier</p>
+                        <p className={`text-xs font-black truncate tracking-tight ${input.textMainClass}`}>{input.currentPlan.plan.name}</p>
+                    </div>
                 </div>
-                <Badge variant={statusMeta.variant} className="rounded-lg px-2 py-0 text-[8px] font-black uppercase">
+                <Badge variant={statusMeta.variant} className="rounded-md px-1.5 h-4 text-[9px] font-black uppercase tracking-tighter">
                     {statusMeta.label}
                 </Badge>
             </div>
 
-            <div className="grid gap-3">
-                <div className={`rounded-2xl border p-4 ${input.mutedPanelClass}`}>
-                    <p className={`text-[9px] font-black uppercase tracking-widest ${input.textMutedClass}`}>Billing</p>
-                    <p className={`mt-1 text-sm font-bold ${input.textMainClass}`}>
-                        {billedAmountLabel} / {billingInterval === 'annual' ? 'year' : 'month'}
-                    </p>
-                </div>
-                <div className={`rounded-2xl border p-4 ${input.mutedPanelClass}`}>
-                    <p className={`text-[9px] font-black uppercase tracking-widest ${input.textMutedClass}`}>Renews On</p>
-                    <p className={`mt-1 text-sm font-bold ${input.textMainClass}`}>{renewalLabel}</p>
-                </div>
-            </div>
-
             <Link
                 href="/workspace/settings?section=settings-billing"
-                className={`inline-flex w-fit items-center gap-1.5 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors ${input.isLight
-                    ? 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                    : 'border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800'
+                className={`group flex items-center justify-between rounded-xl border px-3 py-2 transition-all ${input.isLight
+                    ? 'border-slate-200 bg-white/50 hover:border-slate-300 hover:bg-white'
+                    : 'border-slate-800 bg-slate-950/40 hover:border-slate-700 hover:bg-slate-950'
                     }`}
             >
-                Manage Plan <ArrowUpRight className="h-3.5 w-3.5" />
+                <span className={`text-[10px] font-black uppercase tracking-widest ${input.textMutedClass} group-hover:text-emerald-500 transition-colors`}>Manage Subscription</span>
+                <ArrowUpRight className="h-3 w-3 text-slate-400 group-hover:text-emerald-500 transition-colors" />
             </Link>
         </div>
     )
@@ -544,14 +537,14 @@ export default async function WorkspaceSettingsPage({
                             </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0">
-                            <h1 className={`text-sm font-black tracking-tight truncate ${textMainClass}`}>
+                            <h1 className={`text-base font-black tracking-tight truncate ${textMainClass}`}>
                                 {membership.organization.name}
                             </h1>
                             <div className="flex items-center gap-2 mt-0.5">
-                                <Badge variant={verificationMeta.variant} className="rounded-md px-1 py-0 text-[8px] font-black uppercase tracking-wider">
+                                <Badge variant={verificationMeta.variant} className="rounded-md px-1.5 py-0 text-[10px] font-black uppercase tracking-wider">
                                     {verificationMeta.label}
                                 </Badge>
-                                <span className={`text-[9px] font-bold uppercase tracking-widest ${textMutedClass}`}>
+                                <span className={`text-[11px] font-black uppercase tracking-widest ${textMutedClass}`}>
                                     {toTitleCase(membership.member_role)}
                                 </span>
                             </div>
@@ -562,13 +555,13 @@ export default async function WorkspaceSettingsPage({
                         asChild
                         variant="ghost"
                         size="sm"
-                        className={`w-full justify-start h-9 px-3 text-[10px] font-black uppercase tracking-widest transition-all ${isLight
+                        className={`w-full justify-start h-9 px-3 text-xs font-black uppercase tracking-widest transition-all ${isLight
                             ? 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
                             : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
                             }`}
                     >
                         <Link href="/workspace">
-                            <LayoutDashboard className="mr-2 h-3.5 w-3.5" />
+                            <LayoutDashboard className="mr-2 h-4 w-4" />
                             Back to Workspace
                         </Link>
                     </Button>
@@ -577,7 +570,7 @@ export default async function WorkspaceSettingsPage({
                 {/* Sidebar Content: Navigator + Intelligence */}
                 <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-8 scrollbar-hide">
                     <div>
-                        <p className={`px-4 mb-3 text-[9px] font-black uppercase tracking-[0.2em] ${textMutedClass}`}>System Settings</p>
+                        <p className={`px-4 mb-3 text-xs font-black uppercase tracking-[0.2em] opacity-80 ${textMutedClass}`}>System Settings</p>
                         <SettingsSectionNavigator
                             sections={settingsProperties}
                             isLight={isLight}
@@ -587,7 +580,7 @@ export default async function WorkspaceSettingsPage({
                     <div className={`h-px w-full mx-2 ${isLight ? 'bg-slate-200/50' : 'bg-slate-800/50'}`} />
 
                     <div>
-                        <p className={`px-4 mb-4 text-[9px] font-black uppercase tracking-[0.2em] ${textMutedClass}`}>Intelligence</p>
+                        <p className={`px-4 mb-4 text-xs font-black uppercase tracking-[0.2em] opacity-80 ${textMutedClass}`}>Intelligence</p>
                         <div className="space-y-6 px-2">
                             <CurrentPlanSidebarCard
                                 currentPlan={currentPlan}
@@ -602,57 +595,30 @@ export default async function WorkspaceSettingsPage({
 
                             {/* Readiness Intelligence (Startups Only) */}
                             {isStartupOrganization && (
-                                <div className="space-y-4 px-2">
-                                    <div className="flex items-center gap-4">
-                                        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
-                                            <svg className="h-full w-full -rotate-90 transform">
-                                                <circle
-                                                    cx="28"
-                                                    cy="28"
-                                                    r="24"
-                                                    stroke="currentColor"
-                                                    strokeWidth="3.5"
-                                                    fill="transparent"
-                                                    className={isLight ? 'text-slate-100' : 'text-slate-800'}
-                                                />
-                                                <circle
-                                                    cx="28"
-                                                    cy="28"
-                                                    r="24"
-                                                    stroke="currentColor"
-                                                    strokeWidth="3.5"
-                                                    fill="transparent"
-                                                    strokeDasharray={2 * Math.PI * 24}
-                                                    strokeDashoffset={2 * Math.PI * 24 - (readinessScoreForBar / 100) * (2 * Math.PI * 24)}
-                                                    strokeLinecap="round"
-                                                    className="text-emerald-500 transition-all duration-1000 ease-out"
-                                                />
-                                            </svg>
-                                            <div className="absolute flex flex-col items-center">
-                                                <span className={`text-[11px] font-black tracking-tight ${textMainClass}`}>
-                                                    {readinessScore === null ? 'N/A' : `${readinessScore}%`}
-                                                </span>
+                                <div className="space-y-3 px-4 py-1">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className={`flex h-6 w-6 items-center justify-center rounded-lg border ${isLight ? 'bg-white border-slate-200' : 'bg-slate-950 border-slate-800'}`}>
+                                                <Gauge className="h-3.5 w-3.5 text-emerald-500" />
                                             </div>
+                                            <span className={`text-[10px] font-black uppercase tracking-widest ${textMainClass}`}>Readiness</span>
                                         </div>
+                                        <Badge variant={readinessStatusVariant} className="rounded-md px-1.5 h-4 text-[9px] font-black uppercase tracking-tighter">
+                                            {readinessStatusLabel}
+                                        </Badge>
+                                    </div>
 
-                                        <div className="flex-1 space-y-1.5">
-                                            <div className="flex items-center justify-between">
-                                                <span className={`text-[8px] font-black uppercase tracking-widest ${textMainClass}`}>Readiness</span>
-                                                <Badge variant={readinessStatusVariant} className="rounded-lg px-2 py-0 text-[7px] font-black uppercase">
-                                                    {readinessStatusLabel}
-                                                </Badge>
-                                            </div>
-                                            <div className={`h-1 w-full overflow-hidden rounded-full ${isLight ? 'bg-slate-100' : 'bg-slate-800'}`}>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <div className={`h-1.5 flex-1 overflow-hidden rounded-full ${isLight ? 'bg-slate-100' : 'bg-slate-800'}`}>
                                                 <div
                                                     className="h-full bg-emerald-500 transition-all duration-1000 ws-shimmer"
                                                     style={{ width: `${readinessScoreForBar}%` }}
                                                 />
                                             </div>
-                                            <p className={`text-[8px] font-bold leading-tight ${textMutedClass}`}>
-                                                {hasReadinessData
-                                                    ? `Score ${readinessScoreForBar}%`
-                                                    : 'Awaiting data...'}
-                                            </p>
+                                            <span className={`ml-3 text-[11px] font-black tracking-tight ${textMainClass}`}>
+                                                {readinessScore === null ? 'N/A' : `${readinessScore}%`}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -673,7 +639,7 @@ export default async function WorkspaceSettingsPage({
                 {/* Content Header: Workspace Navbar */}
                 <header className={`sticky top-0 z-30 flex h-20 shrink-0 items-center justify-between border-b px-8 backdrop-blur-3xl ${isLight ? 'border-slate-200 bg-white' : 'border-white/5 bg-[#070b14]/40'}`}>
                     <div className="flex items-center gap-4">
-                        <nav className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">
+                        <nav className="flex items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-500">
                             <span className="opacity-40">Workspace</span>
                             <span className="opacity-20">/</span>
                             <span className="opacity-40">Settings</span>

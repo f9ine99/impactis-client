@@ -84,7 +84,7 @@ export default function SettingsSectionNavigator({
                         <motion.div
                             whileHover={{ x: 2 }}
                             whileTap={{ scale: 0.98 }}
-                            className={`relative flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-[12px] font-bold transition-all duration-300 ${isActive ? activeClass : idleClass}`}
+                            className={`relative flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-xs font-black transition-all duration-300 ${isActive ? activeClass : idleClass}`}
                         >
                             <div className={`flex h-6 w-6 items-center justify-center rounded-lg border ${isActive
                                 ? (isLight ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400')
