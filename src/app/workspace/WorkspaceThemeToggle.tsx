@@ -3,6 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 type WorkspaceTheme = 'light' | 'dark'
@@ -70,7 +71,7 @@ function getCurrentWorkspaceTheme(): WorkspaceTheme {
 }
 
 function subscribeHydrationState(): () => void {
-    return () => {}
+    return () => { }
 }
 
 function getHydrationSnapshot(): boolean {
@@ -87,6 +88,7 @@ export default function WorkspaceThemeToggle({ className }: { className?: string
         getHydrationSnapshot,
         getHydrationServerSnapshot
     )
+    const router = useRouter()
     const [theme, setTheme] = useState<WorkspaceTheme>(() => getCurrentWorkspaceTheme())
 
     useEffect(() => {
@@ -99,6 +101,7 @@ export default function WorkspaceThemeToggle({ className }: { className?: string
         applyWorkspaceTheme(nextTheme)
         persistWorkspaceTheme(nextTheme)
         setTheme(nextTheme)
+        router.refresh()
     }
 
     if (!hydrated) {
