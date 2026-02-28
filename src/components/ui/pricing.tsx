@@ -64,13 +64,17 @@ export function Pricing({
     }
 
     return (
-        <div className="container py-20">
-            <div className="text-center space-y-4 mb-12">
-                <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">{title}</h2>
-                <p className="text-muted-foreground text-lg whitespace-pre-line">{description}</p>
+        <div className="container py-24 md:py-28">
+            <div className="text-center space-y-6 mb-16 max-w-3xl mx-auto">
+                <h2 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-foreground">
+                    {title}
+                </h2>
+                <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed whitespace-pre-line">
+                    {description}
+                </p>
             </div>
 
-            <div className="flex justify-center mb-10">
+            <div className="flex justify-center items-center gap-3 mb-14">
                 <label className="relative inline-flex items-center cursor-pointer">
                     <Label>
                         <Switch
@@ -81,12 +85,12 @@ export function Pricing({
                         />
                     </Label>
                 </label>
-                <span className="ml-2 font-semibold">
+                <span className="text-base font-semibold text-foreground">
                     Annual billing <span className="text-primary">(Save 20%)</span>
                 </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8">
                 {plans.map((plan, index) => (
                     <motion.div
                         key={index}
@@ -111,10 +115,10 @@ export function Pricing({
                             opacity: { duration: 0.5 },
                         }}
                         className={cn(
-                            'rounded-2xl border-[1px] p-6 bg-background text-center lg:flex lg:flex-col lg:justify-center relative',
+                            'rounded-2xl border-[1px] p-8 lg:p-10 bg-background text-center lg:flex lg:flex-col lg:justify-center relative',
                             plan.isPopular ? 'border-primary border-2' : 'border-border',
                             'flex flex-col',
-                            !plan.isPopular && 'mt-5',
+                            !plan.isPopular && 'mt-6',
                             index === 0 || index === 2
                                 ? 'z-0 transform translate-x-0 translate-y-0 -translate-z-[50px] rotate-y-[10deg]'
                                 : 'z-10',
@@ -123,15 +127,19 @@ export function Pricing({
                         )}
                     >
                         {plan.isPopular && (
-                            <div className="absolute top-0 right-0 bg-primary py-0.5 px-2 rounded-bl-xl rounded-tr-xl flex items-center">
+                            <div className="absolute top-0 right-0 bg-primary py-1.5 px-3 rounded-bl-xl rounded-tr-xl flex items-center">
                                 <Star className="text-primary-foreground h-4 w-4 fill-current" />
-                                <span className="text-primary-foreground ml-1 font-sans font-semibold">Popular</span>
+                                <span className="text-primary-foreground ml-1.5 text-sm font-semibold tracking-tight">
+                                    Popular
+                                </span>
                             </div>
                         )}
                         <div className="flex-1 flex flex-col">
-                            <p className="text-base font-semibold text-muted-foreground">{plan.name}</p>
-                            <div className="mt-6 flex items-center justify-center gap-x-2">
-                                <span className="text-5xl font-bold tracking-tight text-foreground tabular-nums">
+                            <p className="text-lg font-semibold text-muted-foreground tracking-tight">
+                                {plan.name}
+                            </p>
+                            <div className="mt-8 flex items-center justify-center gap-x-2">
+                                <span className="text-5xl lg:text-6xl font-bold tracking-tight text-foreground tabular-nums">
                                     <NumberFlow
                                         value={isMonthly ? Number(plan.price) : Number(plan.yearlyPrice)}
                                         format={{
@@ -148,26 +156,28 @@ export function Pricing({
                                     />
                                 </span>
                                 {plan.period !== 'Next 3 months' && (
-                                    <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
+                                    <span className="text-base font-semibold leading-6 tracking-wide text-muted-foreground">
                                         / {plan.period}
                                     </span>
                                 )}
                             </div>
 
-                            <p className="text-xs leading-5 text-muted-foreground">
+                            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                                 {isMonthly ? 'billed monthly' : 'billed annually'}
                             </p>
 
-                            <ul className="mt-5 gap-2 flex flex-col">
+                            <ul className="mt-6 gap-3 flex flex-col">
                                 {plan.features.map((feature, idx) => (
-                                    <li key={idx} className="flex items-start gap-2">
-                                        <Check className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
-                                        <span className="text-left">{feature}</span>
+                                    <li key={idx} className="flex items-start gap-3">
+                                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                                        <span className="text-left text-[15px] leading-snug text-foreground">
+                                            {feature}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
 
-                            <hr className="w-full my-4" />
+                            <hr className="w-full my-6 border-border" />
 
                             <Link
                                 href={plan.href}
@@ -175,14 +185,16 @@ export function Pricing({
                                     buttonVariants({
                                         variant: 'outline',
                                     }),
-                                    'group relative w-full gap-2 overflow-hidden text-lg font-semibold tracking-tighter',
+                                    'group relative w-full gap-2 overflow-hidden py-3 text-base font-semibold tracking-tight',
                                     'transform-gpu ring-offset-current transition-all duration-300 ease-out hover:ring-2 hover:ring-primary hover:ring-offset-1 hover:bg-primary hover:text-primary-foreground',
                                     plan.isPopular ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground'
                                 )}
                             >
                                 {plan.buttonText}
                             </Link>
-                            <p className="mt-6 text-xs leading-5 text-muted-foreground">{plan.description}</p>
+                            <p className="mt-8 text-sm leading-relaxed text-muted-foreground">
+                                {plan.description}
+                            </p>
                         </div>
                     </motion.div>
                 ))}

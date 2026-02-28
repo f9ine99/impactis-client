@@ -60,7 +60,7 @@ export default function PricingSection() {
     return (
         <section
             id="pricing"
-            className="py-24 md:py-32 px-4 relative overflow-hidden bg-gradient-to-b from-white via-[#f0fdf4]/30 to-white"
+            className="py-28 md:py-40 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-b from-white via-[#f0fdf4]/30 to-white"
         >
             <div
                 className="absolute inset-0 bg-[radial-gradient(#0B3D2E_0.5px,transparent_0.5px)] [background-size:32px_32px] opacity-[0.03]"
@@ -78,7 +78,7 @@ export default function PricingSection() {
                 />
             </div>
 
-            <p className="max-w-7xl mx-auto mt-8 text-center text-sm font-medium text-gray-500">
+            <p className="max-w-3xl mx-auto mt-12 text-center text-base font-medium text-gray-600 leading-relaxed">
                 All plans include a 14-day trial. Manage your subscription anytime in{' '}
                 <Link href="/auth/login" className="text-[#0B3D2E] font-semibold underline underline-offset-2 hover:text-[#10B981]">
                     workspace settings
