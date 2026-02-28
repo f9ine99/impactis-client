@@ -21,6 +21,7 @@ import {
     ChevronRight,
     Bell,
     Share2,
+    Crown,
 } from 'lucide-react'
 import type { ComponentType } from 'react'
 import { createClient } from '@/lib/supabase/server'
@@ -192,7 +193,7 @@ function CommandRibbon(input: {
     organizationType: string
     tierIdentifier: string
     isLight: boolean
-    verificationMeta: StatusMeta
+    isFreePlan: boolean
     textMainClassName: string
     textMutedClassName: string
 }) {
@@ -218,23 +219,28 @@ function CommandRibbon(input: {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <div className={`flex items-center gap-2.5 rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${input.verificationMeta.variant === 'success' ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-500' :
-                        input.verificationMeta.variant === 'warning' ? 'border-amber-500/20 bg-amber-500/5 text-amber-500' :
-                            'border-slate-500/20 bg-slate-500/5 text-slate-500'
-                        }`}>
-                        <ShieldCheck className="h-4 w-4" />
-                        <span>{input.verificationMeta.label}</span>
-                        <div className={`ml-1 h-1.5 w-1.5 rounded-full ${input.verificationMeta.variant === 'success' ? 'bg-emerald-500' :
-                            input.verificationMeta.variant === 'warning' ? 'bg-amber-500' :
-                                'bg-slate-500'
-                            } animate-pulse`} />
-                    </div>
-                    <div className={`rounded-full border px-3 py-2 text-[10px] font-black uppercase tracking-widest ${input.isLight
-                        ? 'border-slate-200 bg-slate-50 text-slate-600'
-                        : 'border-slate-700 bg-slate-900 text-slate-300'
-                        }`}>
-                        {input.tierIdentifier}
-                    </div>
+                    {!input.isFreePlan && (
+                        <div className={`rounded-full border px-3 py-2 text-[10px] font-black uppercase tracking-widest ${input.isLight
+                            ? 'border-slate-200 bg-slate-50 text-slate-600'
+                            : 'border-slate-700 bg-slate-900 text-slate-300'
+                            }`}>
+                            {input.tierIdentifier}
+                        </div>
+                    )}
+
+                    {input.isFreePlan && (
+                        <Link
+                            href="/workspace/settings?section=settings-billing"
+                            className="group relative flex flex-col items-center gap-0.5 rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-600 px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/30 active:scale-95 overflow-hidden ws-shimmer"
+                        >
+                            <div className="flex items-center gap-2 relative z-10">
+                                <Crown className="h-4 w-4 animate-pulse fill-white/20" />
+                                <span className="drop-shadow-sm">Upgrade Now</span>
+                                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                            </div>
+                            <span className="text-[7px] font-bold opacity-70 tracking-[0.2em] relative z-10">Unlock Elite Features</span>
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>
@@ -859,6 +865,7 @@ export default async function WorkspacePage() {
     const tierIdentifier = currentPlan
         ? `${currentPlan.plan.name} - Tier ${currentPlan.plan.tier}`
         : 'Tier Not Set'
+    const isFreePlan = currentPlan?.subscription.is_fallback_free || currentPlan?.plan.tier === 0
     const startupReadiness: StartupReadiness | null =
         membership.organization.type === 'startup'
             ? (bootstrapSnapshot.startup_readiness ?? null)
@@ -971,9 +978,10 @@ export default async function WorkspacePage() {
                     </div>
 
                     <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-4 border-r border-slate-200/20 pr-6 mr-2 dark:border-white/5">
-                            <button className="relative p-2 text-slate-400 transition-colors hover:text-emerald-500">
+                        <div className="flex items-center gap-3">
+                            <button className={`relative flex h-10 w-10 items-center justify-center rounded-full border transition-all hover:shadow-lg ${isLight ? 'border-slate-200 bg-white text-slate-400 hover:text-emerald-500' : 'border-white/5 bg-slate-900/40 text-slate-400 hover:text-emerald-500'}`}>
                                 <Bell className="h-5 w-5" />
+                                <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-900" />
                             </button>
                             <WorkspaceThemeToggle />
                         </div>
@@ -1007,7 +1015,7 @@ export default async function WorkspacePage() {
                         organizationType={membership.organization.type}
                         tierIdentifier={tierIdentifier}
                         isLight={isLight}
-                        verificationMeta={verificationMeta}
+                        isFreePlan={isFreePlan}
                         textMainClassName={textMainClass}
                         textMutedClassName={textMutedClass}
                     />
