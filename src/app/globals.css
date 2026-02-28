@@ -399,6 +399,10 @@ body {
 }
 
 /* Workspace theme overrides for light dashboard mode */
+.workspace-theme-light {
+  color-scheme: light;
+}
+
 .workspace-theme-light [data-workspace-root] {
   background-color: #f3f6fb !important;
   color: #0f172a !important;
@@ -497,6 +501,10 @@ body {
 }
 
 /* Workspace theme overrides for dark mode when routes were server-rendered in light mode */
+.dark {
+  color-scheme: dark;
+}
+
 .dark [data-workspace-root] {
   background-color: #070b14 !important;
   color: #f1f5f9 !important;
@@ -691,6 +699,31 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+}
+
+.ws-sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ws-sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ws-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 20px;
+}
+
+.ws-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+.workspace-theme-light .ws-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.15);
+}
+
+.workspace-theme-light .ws-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.3);
 }
 
 @media (prefers-reduced-motion: reduce) {

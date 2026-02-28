@@ -568,7 +568,7 @@ export default async function WorkspaceSettingsPage({
                 </div>
 
                 {/* Sidebar Content: Navigator + Intelligence */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-8 scrollbar-hide">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-8 ws-sidebar-scroll">
                     <div>
                         <p className={`px-4 mb-3 text-xs font-black uppercase tracking-[0.2em] opacity-80 ${textMutedClass}`}>System Settings</p>
                         <SettingsSectionNavigator
