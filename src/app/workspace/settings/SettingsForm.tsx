@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useActionState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Eye, Pencil } from 'lucide-react'
 import { useTransientActionNotice } from '@/lib/use-transient-action-notice'
+import { cn } from '@/lib/utils'
 import type {
     StartupPitchDeckMediaKind,
     StartupPostStatus,
@@ -59,7 +61,6 @@ type SettingsFormProps = {
     defaultStartupPostStatus: StartupPostStatus
     startupReadiness: StartupReadiness | null
     sectionView?: 'identity' | 'readiness' | 'discovery'
-    canEdit: boolean
     isLight?: boolean
 }
 
@@ -70,6 +71,7 @@ const initialState: SettingsSectionActionState = {
 
 export default function SettingsForm(props: SettingsFormProps) {
     const { isLight = true, sectionView = 'identity', organizationType } = props
+    const [isEditMode, setIsEditMode] = useState(false)
 
     const [identityState, identityAction, isIdentityPending] = useActionState(updateOrganizationIdentitySectionAction, initialState)
     const [readinessState, readinessAction, isReadinessPending] = useActionState(updateStartupReadinessSectionAction, initialState)
@@ -112,64 +114,112 @@ export default function SettingsForm(props: SettingsFormProps) {
         : 'identity'
 
     return (
-        <div className="relative">
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={resolvedSectionView}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
-                >
-                    {resolvedSectionView === 'identity' && (
-                        <IdentitySection
-                            {...props}
-                            isLight={isLight}
-                            action={identityAction}
-                            isPending={isIdentityPending}
-                            state={identityState}
-                            mutedPanelClass={mutedPanelClass}
-                            labelClass={labelClass}
-                            inputClass={inputClass}
-                            textMutedClass={textMutedClass}
-                            textMainClass={textMainClass}
-                            titleClass={titleClass}
-                        />
-                    )}
+        <div className="space-y-8">
+            {/* Mode Toggle Header */}
+            <div className="flex items-center justify-between px-2">
+                <div className="flex flex-col gap-1">
+                    <h2 className={`text-sm font-black uppercase tracking-widest ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                        Settings Hub
+                    </h2>
+                    <p className={`text-[10px] font-bold ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                        {isEditMode ? 'You are currently editing organization properties.' : 'Viewing organization properties in read-only mode.'}
+                    </p>
+                </div>
 
-                    {resolvedSectionView === 'readiness' && (
-                        <ReadinessSection
-                            {...props}
-                            isLight={isLight}
-                            action={readinessAction}
-                            isPending={isReadinessPending}
-                            state={readinessState}
-                            mutedPanelClass={mutedPanelClass}
-                            labelClass={labelClass}
-                            inputClass={inputClass}
-                            textMutedClass={textMutedClass}
-                            textMainClass={textMainClass}
-                            titleClass={titleClass}
-                        />
-                    )}
+                <div className={cn('flex items-center gap-1 rounded-xl border p-1',
+                    isLight ? 'border-slate-200 bg-slate-100/50' : 'border-white/5 bg-slate-950/40'
+                )}>
+                    <button
+                        type="button"
+                        onClick={() => setIsEditMode(false)}
+                        className={cn(
+                            'flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300',
+                            !isEditMode
+                                ? 'bg-blue-600 shadow-lg shadow-blue-500/25 text-white'
+                                : isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200'
+                        )}
+                    >
+                        <Eye className="h-3 w-3" />
+                        ReadOnly
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setIsEditMode(true)}
+                        className={cn(
+                            'flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300',
+                            isEditMode
+                                ? 'bg-blue-600 shadow-lg shadow-blue-500/25 text-white'
+                                : isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200'
+                        )}
+                    >
+                        <Pencil className="h-3 w-3" />
+                        Edit Mode
+                    </button>
+                </div>
+            </div>
 
-                    {resolvedSectionView === 'discovery' && (
-                        <DiscoverySection
-                            {...props}
-                            isLight={isLight}
-                            action={discoveryAction}
-                            isPending={isDiscoveryPending}
-                            state={discoveryState}
-                            mutedPanelClass={mutedPanelClass}
-                            labelClass={labelClass}
-                            inputClass={inputClass}
-                            textMutedClass={textMutedClass}
-                            textMainClass={textMainClass}
-                            titleClass={titleClass}
-                        />
-                    )}
-                </motion.div>
-            </AnimatePresence>
+            <div className="relative">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={resolvedSectionView}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                    >
+                        {resolvedSectionView === 'identity' && (
+                            <IdentitySection
+                                {...props}
+                                canEdit={isEditMode}
+                                isLight={isLight}
+                                action={identityAction}
+                                isPending={isIdentityPending}
+                                state={identityState}
+                                mutedPanelClass={mutedPanelClass}
+                                labelClass={labelClass}
+                                inputClass={inputClass}
+                                textMutedClass={textMutedClass}
+                                textMainClass={textMainClass}
+                                titleClass={titleClass}
+                            />
+                        )}
+
+                        {resolvedSectionView === 'readiness' && (
+                            <ReadinessSection
+                                {...props}
+                                canEdit={isEditMode}
+                                isLight={isLight}
+                                action={readinessAction}
+                                isPending={isReadinessPending}
+                                state={readinessState}
+                                mutedPanelClass={mutedPanelClass}
+                                labelClass={labelClass}
+                                inputClass={inputClass}
+                                textMutedClass={textMutedClass}
+                                textMainClass={textMainClass}
+                                titleClass={titleClass}
+                            />
+                        )}
+
+                        {resolvedSectionView === 'discovery' && (
+                            <DiscoverySection
+                                {...props}
+                                canEdit={isEditMode}
+                                isLight={isLight}
+                                action={discoveryAction}
+                                isPending={isDiscoveryPending}
+                                state={discoveryState}
+                                mutedPanelClass={mutedPanelClass}
+                                labelClass={labelClass}
+                                inputClass={inputClass}
+                                textMutedClass={textMutedClass}
+                                textMainClass={textMainClass}
+                                titleClass={titleClass}
+                            />
+                        )}
+                    </motion.div>
+                </AnimatePresence>
+            </div>
         </div>
     )
 }
