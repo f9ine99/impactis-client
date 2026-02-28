@@ -21,8 +21,8 @@ export default function TeamAccessSection(input: TeamAccessSectionProps) {
                     <Users className="h-4 w-4 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
                 </div>
                 <div>
-                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${labelClass}`}>Team Access Guide</p>
-                    <p className={`text-[10px] font-bold ${textMutedClass}`}>Recommended structure for organization collaboration.</p>
+                    <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Team Access Guide</p>
+                    <p className={`text-[11px] font-bold ${textMutedClass}`}>Recommended structure for organization collaboration.</p>
                 </div>
             </div>
 
@@ -30,29 +30,29 @@ export default function TeamAccessSection(input: TeamAccessSectionProps) {
                 {/* Access Hierarchy Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 first:pt-0">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Membership Roles
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Understand the functional boundaries and responsibilities for each seat type.
                         </p>
                     </div>
                     <div className="md:col-span-2">
                         <div className="grid gap-3 sm:grid-cols-3 max-w-2xl">
                             <div className={`rounded-2xl border p-5 ${mutedPanelClass} hover:border-emerald-500/30 transition-colors`}>
-                                <p className={`text-[9px] font-black uppercase tracking-widest ${titleMutedClass}`}>Owner</p>
-                                <p className={`mt-2 text-sm font-black ${textMainClass}`}>Strategic</p>
-                                <p className={`mt-1 text-[10px] font-bold leading-relaxed ${textMutedClass}`}>Full governance over identity, billing, and team composition.</p>
+                                <p className={`text-[11px] font-black uppercase tracking-widest ${titleMutedClass}`}>Owner</p>
+                                <p className={`mt-2 text-base font-black ${textMainClass}`}>Strategic</p>
+                                <p className={`mt-1 text-[11px] font-bold leading-relaxed ${textMutedClass}`}>Full governance over identity, billing, and team composition.</p>
                             </div>
                             <div className={`rounded-2xl border p-5 ${mutedPanelClass} hover:border-emerald-500/30 transition-colors`}>
-                                <p className={`text-[9px] font-black uppercase tracking-widest ${titleMutedClass}`}>Admin</p>
-                                <p className={`mt-2 text-sm font-black ${textMainClass}`}>Oversight</p>
-                                <p className={`mt-1 text-[10px] font-bold leading-relaxed ${textMutedClass}`}>Operational maintenance and discovery campaign execution.</p>
+                                <p className={`text-[11px] font-black uppercase tracking-widest ${titleMutedClass}`}>Admin</p>
+                                <p className={`mt-2 text-base font-black ${textMainClass}`}>Oversight</p>
+                                <p className={`mt-1 text-[11px] font-bold leading-relaxed ${textMutedClass}`}>Operational maintenance and discovery campaign execution.</p>
                             </div>
                             <div className={`rounded-2xl border p-5 ${mutedPanelClass} hover:border-emerald-500/30 transition-colors`}>
-                                <p className={`text-[9px] font-black uppercase tracking-widest ${titleMutedClass}`}>Member</p>
-                                <p className={`mt-2 text-sm font-black ${textMainClass}`}>Standard</p>
-                                <p className={`mt-1 text-[10px] font-bold leading-relaxed ${textMutedClass}`}>View workspace data and participate in active rooms.</p>
+                                <p className={`text-[11px] font-black uppercase tracking-widest ${titleMutedClass}`}>Member</p>
+                                <p className={`mt-2 text-base font-black ${textMainClass}`}>Standard</p>
+                                <p className={`mt-1 text-[11px] font-bold leading-relaxed ${textMutedClass}`}>View workspace data and participate in active rooms.</p>
                             </div>
                         </div>
                     </div>
@@ -61,19 +61,19 @@ export default function TeamAccessSection(input: TeamAccessSectionProps) {
                 {/* Collaboration Context Row */}
                 <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                     <div className="md:col-span-1">
-                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                        <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Governance
                         </label>
-                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                        <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             How roles interact with organizational assets and tools.
                         </p>
                     </div>
                     <div className="md:col-span-2">
                         <div className="grid gap-4 max-w-xl">
-                            <p className={`text-[11px] font-bold leading-relaxed ${textMutedClass}`}>
+                            <p className={`text-[12px] font-bold leading-relaxed ${textMutedClass}`}>
                                 Roles are hierarchical. <span className={textMainClass}>Owners</span> have inherited permissions of <span className={textMainClass}>Admins</span>, who have inherited permissions of <span className={textMainClass}>Members</span>.
                             </p>
-                            <p className={`text-[11px] font-bold leading-relaxed ${textMutedClass}`}>
+                            <p className={`text-[12px] font-bold leading-relaxed ${textMutedClass}`}>
                                 For sensitive financial or legal modifications, restricted &quot;Owner-only&quot; gates are enforced at the API level.
                             </p>
                         </div>

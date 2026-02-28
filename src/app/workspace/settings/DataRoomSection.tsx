@@ -144,26 +144,26 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
             {/* Statistics Row */}
             <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 first:pt-0">
                 <div className="md:col-span-1">
-                    <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${input.labelClass}`}>
+                    <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${input.labelClass}`}>
                         Data Room Capacity
                     </label>
-                    <p className={`text-[11px] font-medium leading-relaxed ${input.textMutedClass}`}>
+                    <p className={`text-sm font-medium leading-relaxed ${input.textMutedClass}`}>
                         Monitor your current usage against plan-based document limits.
                     </p>
                 </div>
                 <div className="md:col-span-2">
                     <div className="grid gap-3 sm:grid-cols-3 max-w-xl">
                         <div className={`rounded-2xl border p-4 ${input.mutedPanelClass}`}>
-                            <p className={`text-[9px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Diligence Files</p>
-                            <p className={`mt-1 text-sm font-black ${input.textMainClass}`}>{uploadedCount}</p>
+                            <p className={`text-[11px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Diligence Files</p>
+                            <p className={`mt-1 text-base font-black ${input.textMainClass}`}>{uploadedCount}</p>
                         </div>
                         <div className={`rounded-2xl border p-4 ${input.mutedPanelClass}`}>
-                            <p className={`text-[9px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Plan Limit</p>
-                            <p className={`mt-1 text-sm font-black ${input.textMainClass}`}>{input.featureGate?.unlimited ? '∞' : input.featureGate?.limit ?? 0}</p>
+                            <p className={`text-[11px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Plan Limit</p>
+                            <p className={`mt-1 text-base font-black ${input.textMainClass}`}>{input.featureGate?.unlimited ? '∞' : input.featureGate?.limit ?? 0}</p>
                         </div>
                         <div className={`rounded-2xl border p-4 ${input.mutedPanelClass}`}>
-                            <p className={`text-[9px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Remaining</p>
-                            <p className={`mt-1 text-sm font-black ${input.textMainClass}`}>{input.featureGate?.unlimited ? '∞' : input.featureGate?.remaining ?? 0}</p>
+                            <p className={`text-[11px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Remaining</p>
+                            <p className={`mt-1 text-base font-black ${input.textMainClass}`}>{input.featureGate?.unlimited ? '∞' : input.featureGate?.remaining ?? 0}</p>
                         </div>
                     </div>
                 </div>
@@ -172,31 +172,31 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
             {/* Information Row */}
             <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                 <div className="md:col-span-1">
-                    <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${input.labelClass}`}>
+                    <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${input.labelClass}`}>
                         System Context
                     </label>
-                    <p className={`text-[11px] font-medium leading-relaxed ${input.textMutedClass}`}>
+                    <p className={`text-sm font-medium leading-relaxed ${input.textMutedClass}`}>
                         Understand the difference between diligence files and readiness inputs.
                     </p>
                 </div>
                 <div className="md:col-span-2">
                     <div className="grid gap-4 sm:grid-cols-2 max-w-xl">
                         <div className={`rounded-2xl border p-4 ${input.mutedPanelClass}`}>
-                            <p className={`text-[9px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Purpose</p>
-                            <p className={`mt-1 text-xs font-black ${input.textMainClass}`}>Investor Diligence</p>
-                            <p className={`mt-1 text-[10px] font-bold leading-relaxed ${input.textMutedClass}`}>
+                            <p className={`text-[11px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Purpose</p>
+                            <p className={`mt-1 text-sm font-black ${input.textMainClass}`}>Investor Diligence</p>
+                            <p className={`mt-1 text-[11px] font-bold leading-relaxed ${input.textMutedClass}`}>
                                 Store detailed fundraising files for secure external review.
                             </p>
                         </div>
                         <div className={`rounded-2xl border p-4 ${input.mutedPanelClass}`}>
-                            <p className={`text-[9px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Boundary</p>
-                            <p className={`mt-1 text-xs font-black ${input.textMainClass}`}>Isolated from Engine</p>
-                            <p className={`mt-1 text-[10px] font-bold leading-relaxed ${input.textMutedClass}`}>
+                            <p className={`text-[11px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Boundary</p>
+                            <p className={`mt-1 text-sm font-black ${input.textMainClass}`}>Isolated from Engine</p>
+                            <p className={`mt-1 text-[11px] font-bold leading-relaxed ${input.textMutedClass}`}>
                                 These files do not influence your Startup Readiness score.
                             </p>
                             <Link
                                 href="/workspace/settings?section=settings-startup-readiness"
-                                className="mt-2 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-tighter text-emerald-500 hover:underline"
+                                className="mt-2 inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-tighter text-emerald-500 hover:underline"
                             >
                                 Manage Score Assets <ArrowUpRight className="h-3 w-3" />
                             </Link>
@@ -211,12 +211,12 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                         <p className={`text-sm font-bold ${input.isLight ? 'text-rose-700' : 'text-rose-300'}`}>
                             Data room upload capacity is currently blocked.
                         </p>
-                        <p className={`mt-1 text-[11px] ${input.isLight ? 'text-rose-700/80' : 'text-rose-300/80'}`}>
+                        <p className={`mt-1 text-sm ${input.isLight ? 'text-rose-700/80' : 'text-rose-300/80'}`}>
                             {input.featureGate?.message}
                         </p>
                         <Link
                             href="/workspace/settings?section=settings-billing"
-                            className={`mt-3 inline-flex w-fit items-center gap-1.5 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors ${input.isLight
+                            className={`mt-3 inline-flex w-fit items-center gap-1.5 rounded-xl border px-3 py-2 text-[11px] font-black uppercase tracking-widest transition-colors ${input.isLight
                                 ? 'border-rose-200 bg-white text-rose-700 hover:bg-rose-100'
                                 : 'border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20'
                                 }`}
@@ -230,10 +230,10 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
             {/* Upload Row */}
             <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                 <div className="md:col-span-1">
-                    <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${input.labelClass}`}>
+                    <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${input.labelClass}`}>
                         Upload Document
                     </label>
-                    <p className={`text-[11px] font-medium leading-relaxed ${input.textMutedClass}`}>
+                    <p className={`text-sm font-medium leading-relaxed ${input.textMutedClass}`}>
                         Add new files to the data room. New uploads replace old versions of the same type.
                     </p>
                 </div>
@@ -242,7 +242,7 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                         <div className="grid gap-4">
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div>
-                                    <label className={`mb-1.5 block text-[8px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Document Type</label>
+                                    <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Document Type</label>
                                     <select
                                         name="dataRoomDocumentType"
                                         defaultValue="pitch_deck"
@@ -257,7 +257,7 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className={`mb-1.5 block text-[8px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Internal Title</label>
+                                    <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Internal Title</label>
                                     <input
                                         name="dataRoomDocumentTitle"
                                         defaultValue=""
@@ -268,7 +268,7 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                                 </div>
                             </div>
                             <div>
-                                <label className={`mb-1.5 block text-[8px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Context or Summary (Optional)</label>
+                                <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Context or Summary (Optional)</label>
                                 <textarea
                                     name="dataRoomDocumentSummary"
                                     defaultValue=""
@@ -279,12 +279,12 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                                 />
                             </div>
                             <div>
-                                <label className={`mb-1.5 block text-[8px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>File Selection (Max 100MB)</label>
+                                <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>File Selection (Max 100MB)</label>
                                 <input
                                     name="dataRoomDocumentFile"
                                     type="file"
                                     disabled={uploadDisabled}
-                                    className={`w-full rounded-xl border px-3 py-2 text-[11px] font-bold file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-500 file:px-3 file:py-1.5 file:text-[9px] file:font-black file:uppercase file:tracking-widest file:text-white transition-all hover:file:bg-emerald-600 ${input.isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-950 text-slate-100'}`}
+                                    className={`w-full rounded-xl border px-3 py-2 text-xs font-bold file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-500 file:px-3 file:py-1.5 file:text-[11px] file:font-black file:uppercase file:tracking-widest file:text-white transition-all hover:file:bg-emerald-600 ${input.isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-950 text-slate-100'}`}
                                 />
                             </div>
                             <div className="flex flex-col gap-4 mt-2">
@@ -313,10 +313,10 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
             {/* Library Row */}
             <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
                 <div className="md:col-span-1">
-                    <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${input.labelClass}`}>
+                    <label className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${input.labelClass}`}>
                         Document Library
                     </label>
-                    <p className={`text-[11px] font-medium leading-relaxed ${input.textMutedClass}`}>
+                    <p className={`text-sm font-medium leading-relaxed ${input.textMutedClass}`}>
                         Manage your securely stored diligence files.
                     </p>
                 </div>
@@ -327,8 +327,8 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                                 <div key={document.id} className={`rounded-2xl border p-4 transition-all hover:shadow-md ${input.mutedPanelClass}`}>
                                     <div className="flex flex-col gap-2">
                                         <div className="flex items-center justify-between gap-2">
-                                            <p className={`text-[11px] font-black uppercase tracking-tight truncate ${input.textMainClass}`}>{document.title}</p>
-                                            <Badge variant="outline" className="h-4 px-1 text-[8px] font-black uppercase tracking-tighter border-slate-200 text-slate-500">
+                                            <p className={`text-[12px] font-black uppercase tracking-tight truncate ${input.textMainClass}`}>{document.title}</p>
+                                            <Badge variant="outline" className="h-4 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-tighter border-slate-200 text-slate-500">
                                                 {document.document_type.split('_').pop()}
                                             </Badge>
                                         </div>
@@ -336,19 +336,19 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                                             href={document.file_url}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="block truncate text-[11px] font-bold text-emerald-500 hover:underline"
+                                            className="block truncate text-xs font-bold text-emerald-500 hover:underline"
                                         >
                                             {document.file_name || 'Open resource'}
                                         </a>
-                                        <p className={`text-[10px] font-bold ${input.textMutedClass}`}>
+                                        <p className={`text-[11px] font-bold ${input.textMutedClass}`}>
                                             {formatFileSize(document.file_size_bytes)}
                                             {document.content_type ? ` · ${document.content_type.split('/').pop()?.toUpperCase()}` : ''}
                                         </p>
                                         {document.summary ? (
-                                            <p className={`mt-1 text-[10px] font-medium leading-relaxed line-clamp-2 ${input.textMutedClass}`}>{document.summary}</p>
+                                            <p className={`mt-1 text-[11px] font-medium leading-relaxed line-clamp-2 ${input.textMutedClass}`}>{document.summary}</p>
                                         ) : null}
                                         <div className="mt-2 pt-2 border-t border-slate-200/5 flex items-center justify-between gap-2">
-                                            <p className={`text-[9px] font-bold text-slate-400 capitalize`}>Updated {new Date(document.updated_at).toLocaleDateString()}</p>
+                                            <p className={`text-[10px] font-bold text-slate-400 capitalize`}>Updated {new Date(document.updated_at).toLocaleDateString()}</p>
                                             {input.canEdit ? (
                                                 <form action={deleteAction}>
                                                     <input type="hidden" name="dataRoomDocumentId" value={document.id} />
@@ -357,7 +357,7 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                                                         variant="ghost"
                                                         size="sm"
                                                         disabled={isDeletePending}
-                                                        className="h-6 px-2 text-[9px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 hover:text-rose-600"
+                                                        className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 hover:text-rose-600"
                                                     >
                                                         {isDeletePending ? '...' : 'Remove'}
                                                     </Button>
@@ -370,7 +370,7 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                         </div>
                     ) : (
                         <div className={`rounded-2xl border border-dashed p-10 text-center max-w-xl ${input.textMutedClass}`}>
-                            <p className="text-[11px] font-bold italic">No documents currently archived in the Data Room.</p>
+                            <p className="text-sm font-bold italic">No documents currently archived in the Data Room.</p>
                         </div>
                     )}
                 </div>
