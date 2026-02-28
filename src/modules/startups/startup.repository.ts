@@ -1,6 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { apiRequest } from '@/lib/api/rest-client'
 import type {
+    StartupDataRoomDocument,
+    StartupDataRoomDocumentType,
     StartupPitchDeckMediaKind,
     StartupPost,
     StartupPostStatus,
@@ -21,6 +23,16 @@ const STARTUP_READINESS_STEPS = new Set<StartupReadinessStep>([
 ])
 const STARTUP_POST_STATUSES = new Set<StartupPostStatus>(['draft', 'published'])
 const STARTUP_PITCH_DECK_MEDIA_KINDS = new Set<StartupPitchDeckMediaKind>(['document', 'video'])
+const STARTUP_DATA_ROOM_DOCUMENT_TYPES = new Set<StartupDataRoomDocumentType>([
+    'pitch_deck',
+    'financial_model',
+    'cap_table',
+    'traction_metrics',
+    'legal_company_docs',
+    'incorporation_docs',
+    'customer_contracts_summaries',
+    'term_sheet_drafts',
+])
 
 type StartupReadinessRow = {
     startup_org_id: string
@@ -76,6 +88,20 @@ type StartupPostRow = {
     updated_at: string
 }
 
+type StartupDataRoomDocumentRow = {
+    id: string
+    startup_org_id: string
+    document_type: string
+    title: string
+    file_url: string
+    file_name: string | null
+    file_size_bytes: number | null
+    content_type: string | null
+    summary: string | null
+    created_at: string
+    updated_at: string
+}
+
 type StartupMutationResult = {
     success: boolean
     message: string | null
@@ -96,6 +122,17 @@ function normalizeText(value: unknown): string | null {
 
     const trimmed = value.trim()
     return trimmed.length > 0 ? trimmed : null
+}
+
+function normalizeUuid(value: unknown): string | null {
+    const normalized = normalizeText(value)
+    if (!normalized) {
+        return null
+    }
+
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(normalized)
+        ? normalized
+        : null
 }
 
 function normalizeBoolean(value: unknown): boolean {
@@ -208,6 +245,17 @@ function normalizeStartupPitchDeckMediaKind(value: unknown): StartupPitchDeckMed
         : null
 }
 
+function normalizeStartupDataRoomDocumentType(value: unknown): StartupDataRoomDocumentType | null {
+    if (typeof value !== 'string') {
+        return null
+    }
+
+    const normalized = value.trim().toLowerCase()
+    return STARTUP_DATA_ROOM_DOCUMENT_TYPES.has(normalized as StartupDataRoomDocumentType)
+        ? (normalized as StartupDataRoomDocumentType)
+        : null
+}
+
 function mapStartupReadiness(row: StartupReadinessRow): StartupReadiness | null {
     const startupOrgId = normalizeText(row.startup_org_id)
     if (!startupOrgId) {
@@ -285,6 +333,33 @@ function mapStartupPost(row: StartupPostRow): StartupPost | null {
         status,
         published_at: normalizeText(row.published_at),
         updated_at: row.updated_at,
+    }
+}
+
+function mapStartupDataRoomDocument(row: StartupDataRoomDocumentRow): StartupDataRoomDocument | null {
+    const id = normalizeUuid(row.id)
+    const startupOrgId = normalizeUuid(row.startup_org_id)
+    const documentType = normalizeStartupDataRoomDocumentType(row.document_type)
+    const title = normalizeText(row.title)
+    const fileUrl = normalizeText(row.file_url)
+    const createdAt = normalizeText(row.created_at)
+    const updatedAt = normalizeText(row.updated_at)
+    if (!id || !startupOrgId || !documentType || !title || !fileUrl || !createdAt || !updatedAt) {
+        return null
+    }
+
+    return {
+        id,
+        startup_org_id: startupOrgId,
+        document_type: documentType,
+        title,
+        file_url: fileUrl,
+        file_name: normalizeText(row.file_name),
+        file_size_bytes: normalizeNullableNumber(row.file_size_bytes),
+        content_type: normalizeText(row.content_type),
+        summary: normalizeText(row.summary),
+        created_at: createdAt,
+        updated_at: updatedAt,
     }
 }
 
@@ -491,4 +566,100 @@ export async function upsertStartupPostForCurrentUser(
     }
 
     return post.id
+}
+
+export async function getStartupDataRoomDocumentsForCurrentUser(
+    supabase: SupabaseClient
+): Promise<StartupDataRoomDocument[]> {
+    const accessToken = await getAccessToken(supabase)
+    if (!accessToken) {
+        console.warn('[startups] Failed to load startup data room documents: missing access token')
+        return []
+    }
+
+    const rows = await apiRequest<StartupDataRoomDocumentRow[] | null>({
+        path: '/startups/data-room/documents',
+        method: 'GET',
+        accessToken,
+    })
+    if (!rows || !Array.isArray(rows)) {
+        return []
+    }
+
+    return rows
+        .map((row) => mapStartupDataRoomDocument(row))
+        .filter((row): row is StartupDataRoomDocument => !!row)
+}
+
+export async function upsertStartupDataRoomDocumentForCurrentUser(
+    supabase: SupabaseClient,
+    input: {
+        documentType: StartupDataRoomDocumentType
+        title: string
+        fileUrl: string
+        fileName?: string | null
+        fileSizeBytes?: number | null
+        contentType?: string | null
+        summary?: string | null
+    }
+): Promise<void> {
+    const documentType = normalizeStartupDataRoomDocumentType(input.documentType)
+    const title = normalizeText(input.title)
+    const fileUrl = normalizeText(input.fileUrl)
+    if (!documentType) {
+        throw new Error('Data room document type is invalid.')
+    }
+    if (!title || title.length < 2) {
+        throw new Error('Data room document title must be at least 2 characters.')
+    }
+    if (!fileUrl) {
+        throw new Error('Data room file URL is required.')
+    }
+
+    const accessToken = await getAccessToken(supabase)
+    if (!accessToken) {
+        throw new Error('Your session has expired. Please log in again.')
+    }
+
+    const result = await apiRequest<StartupMutationResult>({
+        path: '/startups/data-room/documents',
+        method: 'POST',
+        accessToken,
+        body: {
+            documentType,
+            title,
+            fileUrl,
+            fileName: normalizeText(input.fileName),
+            fileSizeBytes: normalizeNullableNumber(input.fileSizeBytes),
+            contentType: normalizeText(input.contentType),
+            summary: normalizeText(input.summary),
+        },
+    })
+    if (!result?.success) {
+        throw new Error(result?.message ?? 'Unable to save data room document right now.')
+    }
+}
+
+export async function deleteStartupDataRoomDocumentForCurrentUser(
+    supabase: SupabaseClient,
+    documentId: string
+): Promise<void> {
+    const normalizedDocumentId = normalizeUuid(documentId)
+    if (!normalizedDocumentId) {
+        throw new Error('Data room document id is invalid.')
+    }
+
+    const accessToken = await getAccessToken(supabase)
+    if (!accessToken) {
+        throw new Error('Your session has expired. Please log in again.')
+    }
+
+    const result = await apiRequest<StartupMutationResult>({
+        path: `/startups/data-room/documents/${encodeURIComponent(normalizedDocumentId)}`,
+        method: 'DELETE',
+        accessToken,
+    })
+    if (!result?.success) {
+        throw new Error(result?.message ?? 'Unable to remove data room document right now.')
+    }
 }

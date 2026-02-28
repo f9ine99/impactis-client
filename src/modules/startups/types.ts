@@ -1,4 +1,13 @@
 export type StartupPostStatus = 'draft' | 'published'
+export type StartupDataRoomDocumentType =
+    | 'pitch_deck'
+    | 'financial_model'
+    | 'cap_table'
+    | 'traction_metrics'
+    | 'legal_company_docs'
+    | 'incorporation_docs'
+    | 'customer_contracts_summaries'
+    | 'term_sheet_drafts'
 export type StartupReadinessStep =
     | 'upload_pitch_deck'
     | 'add_team_info'
@@ -92,4 +101,18 @@ export type StartupDiscoveryFeedItem = {
     industry_tags: string[]
     published_at: string | null
     startup_verification_status: StartupDiscoveryVerificationStatus
+}
+
+export type StartupDataRoomDocument = {
+    id: string
+    startup_org_id: string
+    document_type: StartupDataRoomDocumentType
+    title: string
+    file_url: string
+    file_name: string | null
+    file_size_bytes: number | null
+    content_type: string | null
+    summary: string | null
+    created_at: string
+    updated_at: string
 }
