@@ -78,14 +78,20 @@ export function IdentitySection({
                         </p>
                     </div>
                     <div className="md:col-span-2">
-                        <input
-                            id="organizationName"
-                            name="organizationName"
-                            defaultValue={defaultOrganizationName}
-                            disabled={!canEdit || isPending}
-                            placeholder="e.g. Acme Corp"
-                            className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                        />
+                        {canEdit ? (
+                            <input
+                                id="organizationName"
+                                name="organizationName"
+                                defaultValue={defaultOrganizationName}
+                                disabled={isPending}
+                                placeholder="e.g. Acme Corp"
+                                className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                            />
+                        ) : (
+                            <div className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                {defaultOrganizationName || 'Not set'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -100,14 +106,20 @@ export function IdentitySection({
                         </p>
                     </div>
                     <div className="md:col-span-2">
-                        <input
-                            id="organizationLocation"
-                            name="organizationLocation"
-                            defaultValue={defaultOrganizationLocation}
-                            disabled={!canEdit || isPending}
-                            placeholder="City, Country"
-                            className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                        />
+                        {canEdit ? (
+                            <input
+                                id="organizationLocation"
+                                name="organizationLocation"
+                                defaultValue={defaultOrganizationLocation}
+                                disabled={isPending}
+                                placeholder="City, Country"
+                                className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                            />
+                        ) : (
+                            <div className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                {defaultOrganizationLocation || 'Not set'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -125,15 +137,23 @@ export function IdentitySection({
                         <input type="hidden" name="organizationLogoCurrentUrl" value={defaultOrganizationLogoUrl} />
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-start max-w-xl">
                             <div className="flex-1">
-                                <input
-                                    id="organizationLogoFile"
-                                    name="organizationLogoFile"
-                                    type="file"
-                                    accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
-                                    disabled={!canEdit || isPending}
-                                    className={`w-full rounded-xl border px-4 py-2.5 text-xs outline-none transition-all file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-500 file:px-3 file:py-1.5 file:text-[11px] file:font-black file:uppercase file:text-white hover:file:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                                />
-                                <p className={`mt-2 text-[11px] font-medium ${textMutedClass}`}>JPG, PNG, WEBP, GIF, or SVG (max 2MB).</p>
+                                {canEdit ? (
+                                    <>
+                                        <input
+                                            id="organizationLogoFile"
+                                            name="organizationLogoFile"
+                                            type="file"
+                                            accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                                            disabled={isPending}
+                                            className={`w-full rounded-xl border px-4 py-2.5 text-xs outline-none transition-all file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-500 file:px-3 file:py-1.5 file:text-[11px] file:font-black file:uppercase file:text-white hover:file:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                                        />
+                                        <p className={`mt-2 text-[11px] font-medium ${textMutedClass}`}>JPG, PNG, WEBP, GIF, or SVG (max 2MB).</p>
+                                    </>
+                                ) : (
+                                    <div className={`w-full rounded-xl border px-4 py-3 text-sm font-medium ${isLight ? 'bg-slate-50 border-slate-100 italic' : 'bg-slate-900 border-slate-800 italic opacity-50'}`}>
+                                        Edit mode required to update logo
+                                    </div>
+                                )}
                             </div>
 
                             {defaultOrganizationLogoUrl ? (
@@ -142,15 +162,17 @@ export function IdentitySection({
                                         <AvatarImage src={defaultOrganizationLogoUrl} alt="Organization logo" />
                                         <AvatarFallback className="bg-slate-900 text-xs font-bold text-white">LOGO</AvatarFallback>
                                     </Avatar>
-                                    <label className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-tight cursor-pointer ${textMutedClass}`}>
-                                        <input
-                                            type="checkbox"
-                                            name="organizationLogoRemove"
-                                            value="1"
-                                            disabled={!canEdit || isPending}
-                                            className="h-3.5 w-3.5 rounded border-slate-300 accent-emerald-500"
-                                        />
-                                        Remove
+                                    <label className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-tight ${canEdit ? 'cursor-pointer' : 'opacity-30'} ${textMutedClass}`}>
+                                        {canEdit && (
+                                            <input
+                                                type="checkbox"
+                                                name="organizationLogoRemove"
+                                                value="1"
+                                                disabled={isPending}
+                                                className="h-3.5 w-3.5 rounded border-slate-300 accent-emerald-500"
+                                            />
+                                        )}
+                                        {canEdit ? 'Remove' : 'Protected'}
                                     </label>
                                 </div>
                             ) : null}
@@ -202,15 +224,21 @@ export function IdentitySection({
                                 </p>
                             </div>
                             <div className="md:col-span-2">
-                                <textarea
-                                    id="investorThesis"
-                                    name="investorThesis"
-                                    defaultValue={defaultInvestorThesis}
-                                    disabled={!canEdit || isPending}
-                                    rows={4}
-                                    placeholder="Describe your mandate, stage focus, and value-add..."
-                                    className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                                />
+                                {canEdit ? (
+                                    <textarea
+                                        id="investorThesis"
+                                        name="investorThesis"
+                                        defaultValue={defaultInvestorThesis}
+                                        disabled={isPending}
+                                        rows={4}
+                                        placeholder="Describe your mandate, stage focus, and value-add..."
+                                        className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                                    />
+                                ) : (
+                                    <div className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm font-medium leading-relaxed ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                        {defaultInvestorThesis || 'No investment thesis provided yet.'}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -258,25 +286,37 @@ export function IdentitySection({
                             <div className="md:col-span-2">
                                 <div className="flex max-w-xl items-center gap-4">
                                     <div className="flex-1">
-                                        <input
-                                            name="investorCheckSizeMinUsd"
-                                            type="number"
-                                            defaultValue={defaultInvestorCheckSizeMinUsd ?? ''}
-                                            disabled={!canEdit || isPending}
-                                            placeholder="Min USD"
-                                            className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                                        />
+                                        {canEdit ? (
+                                            <input
+                                                name="investorCheckSizeMinUsd"
+                                                type="number"
+                                                defaultValue={defaultInvestorCheckSizeMinUsd ?? ''}
+                                                disabled={isPending}
+                                                placeholder="Min USD"
+                                                className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                                            />
+                                        ) : (
+                                            <div className={`w-full rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                                {defaultInvestorCheckSizeMinUsd !== null ? `$${defaultInvestorCheckSizeMinUsd.toLocaleString()}` : 'No Min'}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className={`h-px w-4 ${isLight ? 'bg-slate-200' : 'bg-slate-700'}`} />
                                     <div className="flex-1">
-                                        <input
-                                            name="investorCheckSizeMaxUsd"
-                                            type="number"
-                                            defaultValue={defaultInvestorCheckSizeMaxUsd ?? ''}
-                                            disabled={!canEdit || isPending}
-                                            placeholder="Max USD"
-                                            className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                                        />
+                                        {canEdit ? (
+                                            <input
+                                                name="investorCheckSizeMaxUsd"
+                                                type="number"
+                                                defaultValue={defaultInvestorCheckSizeMaxUsd ?? ''}
+                                                disabled={isPending}
+                                                placeholder="Max USD"
+                                                className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                                            />
+                                        ) : (
+                                            <div className={`w-full rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                                {defaultInvestorCheckSizeMaxUsd !== null ? `$${defaultInvestorCheckSizeMaxUsd.toLocaleString()}` : 'No Max'}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -294,13 +334,15 @@ export function IdentitySection({
                     </div>
                     <div className="md:col-span-2">
                         <div className="flex flex-col gap-4">
-                            <Button
-                                type="submit"
-                                disabled={!canEdit || isPending}
-                                className="w-fit h-10 px-8 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
-                            >
-                                {isPending ? 'Synchronizing...' : 'Save Identity'}
-                            </Button>
+                            {canEdit && (
+                                <Button
+                                    type="submit"
+                                    disabled={isPending}
+                                    className="w-fit h-10 px-8 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
+                                >
+                                    {isPending ? 'Synchronizing...' : 'Save Identity'}
+                                </Button>
+                            )}
                             {state.error ? (
                                 <div className="max-w-xl">
                                     <ActionFeedback tone="error" title="Update failed" message={state.error} isLight={isLight} />

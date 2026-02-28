@@ -192,14 +192,20 @@ export function ReadinessSection({
                         </p>
                     </div>
                     <div className="md:col-span-2">
-                        <input
-                            id="startupWebsiteUrl"
-                            name="startupWebsiteUrl"
-                            defaultValue={defaultStartupWebsiteUrl}
-                            disabled={!canEdit || isPending}
-                            placeholder="https://startup.com"
-                            className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                        />
+                        {canEdit ? (
+                            <input
+                                id="startupWebsiteUrl"
+                                name="startupWebsiteUrl"
+                                defaultValue={defaultStartupWebsiteUrl}
+                                disabled={isPending}
+                                placeholder="https://startup.com"
+                                className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                            />
+                        ) : (
+                            <div className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                {defaultStartupWebsiteUrl || 'Not set'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -249,15 +255,21 @@ export function ReadinessSection({
                         </p>
                     </div>
                     <div className="md:col-span-2">
-                        <textarea
-                            id="startupTeamOverview"
-                            name="startupTeamOverview"
-                            defaultValue={defaultStartupTeamOverview}
-                            disabled={!canEdit || isPending}
-                            rows={4}
-                            placeholder="Describe relevant experience and expertise..."
-                            className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                        />
+                        {canEdit ? (
+                            <textarea
+                                id="startupTeamOverview"
+                                name="startupTeamOverview"
+                                defaultValue={defaultStartupTeamOverview}
+                                disabled={isPending}
+                                rows={4}
+                                placeholder="Describe relevant experience and expertise..."
+                                className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                            />
+                        ) : (
+                            <div className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm font-medium leading-relaxed ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                {defaultStartupTeamOverview || 'No team overview provided yet.'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -275,35 +287,47 @@ export function ReadinessSection({
                         <div className="grid gap-4 sm:grid-cols-2 max-w-xl">
                             <div>
                                 <label htmlFor="startupCompanyStage" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Stage</label>
-                                <select
-                                    id="startupCompanyStage"
-                                    name="startupCompanyStage"
-                                    defaultValue={defaultStartupCompanyStage}
-                                    disabled={!canEdit || isPending}
-                                    className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                                >
-                                    <option value="">Select stage</option>
-                                    <option value="idea">Idea</option>
-                                    <option value="mvp">MVP</option>
-                                    <option value="pre-seed">Pre-seed</option>
-                                    <option value="seed">Seed</option>
-                                    <option value="series-a">Series A</option>
-                                    <option value="growth">Growth</option>
-                                </select>
+                                {canEdit ? (
+                                    <select
+                                        id="startupCompanyStage"
+                                        name="startupCompanyStage"
+                                        defaultValue={defaultStartupCompanyStage}
+                                        disabled={isPending}
+                                        className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                                    >
+                                        <option value="">Select stage</option>
+                                        <option value="idea">Idea</option>
+                                        <option value="mvp">MVP</option>
+                                        <option value="pre-seed">Pre-seed</option>
+                                        <option value="seed">Seed</option>
+                                        <option value="series-a">Series A</option>
+                                        <option value="growth">Growth</option>
+                                    </select>
+                                ) : (
+                                    <div className={`w-full rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                        {toTitleCase(defaultStartupCompanyStage) || 'Not set'}
+                                    </div>
+                                )}
                             </div>
                             <div>
                                 <label htmlFor="startupFoundingYear" className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${labelClass}`}>Founding Year</label>
-                                <input
-                                    id="startupFoundingYear"
-                                    name="startupFoundingYear"
-                                    type="number"
-                                    min={1900}
-                                    max={2100}
-                                    defaultValue={defaultStartupFoundingYear ?? ''}
-                                    disabled={!canEdit || isPending}
-                                    placeholder="2024"
-                                    className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                                />
+                                {canEdit ? (
+                                    <input
+                                        id="startupFoundingYear"
+                                        name="startupFoundingYear"
+                                        type="number"
+                                        min={1900}
+                                        max={2100}
+                                        defaultValue={defaultStartupFoundingYear ?? ''}
+                                        disabled={isPending}
+                                        placeholder="2024"
+                                        className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                                    />
+                                ) : (
+                                    <div className={`w-full rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                        {defaultStartupFoundingYear || 'Not set'}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -320,15 +344,21 @@ export function ReadinessSection({
                         </p>
                     </div>
                     <div className="md:col-span-2">
-                        <textarea
-                            id="startupTractionSummary"
-                            name="startupTractionSummary"
-                            defaultValue={defaultStartupTractionSummary}
-                            disabled={!canEdit || isPending}
-                            rows={4}
-                            placeholder="Users, ARR, growth rate, or key enterprise milestones."
-                            className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                        />
+                        {canEdit ? (
+                            <textarea
+                                id="startupTractionSummary"
+                                name="startupTractionSummary"
+                                defaultValue={defaultStartupTractionSummary}
+                                disabled={isPending}
+                                rows={4}
+                                placeholder="Users, ARR, growth rate, or key enterprise milestones."
+                                className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                            />
+                        ) : (
+                            <div className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm font-medium leading-relaxed ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                {defaultStartupTractionSummary || 'No traction data provided yet.'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -398,13 +428,15 @@ export function ReadinessSection({
                     </div>
                     <div className="md:col-span-2">
                         <div className="flex flex-col gap-4">
-                            <Button
-                                type="submit"
-                                disabled={!canEdit || isPending}
-                                className="w-fit h-10 px-8 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
-                            >
-                                {isPending ? 'Synchronizing Engine...' : 'Save Readiness'}
-                            </Button>
+                            {canEdit && (
+                                <Button
+                                    type="submit"
+                                    disabled={isPending}
+                                    className="w-fit h-10 px-8 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
+                                >
+                                    {isPending ? 'Synchronizing Engine...' : 'Save Readiness'}
+                                </Button>
+                            )}
                             {!canEdit ? (
                                 <p className="text-[11px] font-bold text-amber-600/80">Only owners can manage readiness assets.</p>
                             ) : null}

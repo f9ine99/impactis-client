@@ -73,14 +73,20 @@ export function DiscoverySection({
                         </p>
                     </div>
                     <div className="md:col-span-2">
-                        <input
-                            id="startupPostTitle"
-                            name="startupPostTitle"
-                            defaultValue={defaultStartupPostTitle}
-                            disabled={!canEdit || isPending}
-                            placeholder="Enter a high-impact headline..."
-                            className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                        />
+                        {canEdit ? (
+                            <input
+                                id="startupPostTitle"
+                                name="startupPostTitle"
+                                defaultValue={defaultStartupPostTitle}
+                                disabled={isPending}
+                                placeholder="Enter a high-impact headline..."
+                                className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                            />
+                        ) : (
+                            <div className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                {defaultStartupPostTitle || 'No campaign headline set'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -95,15 +101,21 @@ export function DiscoverySection({
                         </p>
                     </div>
                     <div className="md:col-span-2">
-                        <textarea
-                            id="startupPostSummary"
-                            name="startupPostSummary"
-                            defaultValue={defaultStartupPostSummary}
-                            disabled={!canEdit || isPending}
-                            rows={5}
-                            placeholder="Describe the problem you solve, your traction, and your vision."
-                            className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                        />
+                        {canEdit ? (
+                            <textarea
+                                id="startupPostSummary"
+                                name="startupPostSummary"
+                                defaultValue={defaultStartupPostSummary}
+                                disabled={isPending}
+                                rows={5}
+                                placeholder="Describe the problem you solve, your traction, and your vision."
+                                className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                            />
+                        ) : (
+                            <div className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm font-medium leading-relaxed ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                {defaultStartupPostSummary || 'No executive summary provided yet.'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -121,25 +133,37 @@ export function DiscoverySection({
                         <div className="grid gap-4 sm:grid-cols-2 max-w-xl">
                             <div>
                                 <label htmlFor="startupPostStage" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>Current Stage</label>
-                                <input
-                                    id="startupPostStage"
-                                    name="startupPostStage"
-                                    defaultValue={defaultStartupPostStage}
-                                    disabled={!canEdit || isPending}
-                                    placeholder="Pre-seed, Seed, etc."
-                                    className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                                />
+                                {canEdit ? (
+                                    <input
+                                        id="startupPostStage"
+                                        name="startupPostStage"
+                                        defaultValue={defaultStartupPostStage}
+                                        disabled={isPending}
+                                        placeholder="Pre-seed, Seed, etc."
+                                        className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                                    />
+                                ) : (
+                                    <div className={`w-full rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                        {defaultStartupPostStage || 'Not set'}
+                                    </div>
+                                )}
                             </div>
                             <div>
                                 <label htmlFor="startupPostLocation" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>Primary Location</label>
-                                <input
-                                    id="startupPostLocation"
-                                    name="startupPostLocation"
-                                    defaultValue={defaultStartupPostLocation}
-                                    disabled={!canEdit || isPending}
-                                    placeholder="City, Country"
-                                    className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                                />
+                                {canEdit ? (
+                                    <input
+                                        id="startupPostLocation"
+                                        name="startupPostLocation"
+                                        defaultValue={defaultStartupPostLocation}
+                                        disabled={isPending}
+                                        placeholder="City, Country"
+                                        className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                                    />
+                                ) : (
+                                    <div className={`w-full rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                        {defaultStartupPostLocation || 'Not set'}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -187,16 +211,22 @@ export function DiscoverySection({
                         </p>
                     </div>
                     <div className="md:col-span-2">
-                        <select
-                            id="startupPostStatus"
-                            name="startupPostStatus"
-                            defaultValue={defaultStartupPostStatus}
-                            disabled={!canEdit || isPending}
-                            className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
-                        >
-                            <option value="draft">Private Draft</option>
-                            <option value="published">Publicly Discoverable</option>
-                        </select>
+                        {canEdit ? (
+                            <select
+                                id="startupPostStatus"
+                                name="startupPostStatus"
+                                defaultValue={defaultStartupPostStatus}
+                                disabled={isPending}
+                                className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}
+                            >
+                                <option value="draft">Private Draft</option>
+                                <option value="published">Publicly Discoverable</option>
+                            </select>
+                        ) : (
+                            <div className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm font-bold ${textMainClass} ${isLight ? 'bg-white/50 border-slate-100' : 'bg-slate-950/50 border-slate-800'}`}>
+                                {defaultStartupPostStatus === 'published' ? 'Publicly Discoverable' : 'Private Draft'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -211,13 +241,15 @@ export function DiscoverySection({
                     </div>
                     <div className="md:col-span-2">
                         <div className="flex flex-col gap-4">
-                            <Button
-                                type="submit"
-                                disabled={!canEdit || isPending}
-                                className="w-fit h-10 px-8 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
-                            >
-                                {isPending ? 'Synchronizing...' : 'Save Campaign'}
-                            </Button>
+                            {canEdit && (
+                                <Button
+                                    type="submit"
+                                    disabled={isPending}
+                                    className="w-fit h-10 px-8 text-xs font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
+                                >
+                                    {isPending ? 'Synchronizing...' : 'Save Campaign'}
+                                </Button>
+                            )}
                             {!canEdit ? (
                                 <p className="text-[11px] font-bold text-amber-600/80">Only owners can manage discovery campaigns.</p>
                             ) : null}
