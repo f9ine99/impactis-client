@@ -14,6 +14,7 @@ import {
     parseIndustryTags,
 } from '@/modules/organizations'
 import {
+    type StartupDataRoomDocumentType,
     type StartupPitchDeckMediaKind,
     type StartupPostStatus,
 } from '@/modules/startups'
@@ -48,6 +49,7 @@ const ALLOWED_ORGANIZATION_LOGO_MIME_TYPES = new Set([
 ])
 const STARTUP_READINESS_ASSET_BUCKET = 'startup-readiness-assets'
 const MAX_STARTUP_READINESS_ASSET_SIZE_BYTES = 50 * 1024 * 1024
+const MAX_STARTUP_DATA_ROOM_ASSET_SIZE_BYTES = 100 * 1024 * 1024
 const ALLOWED_STARTUP_PITCH_DECK_ASSET_MIME_TYPES = new Set([
     'application/pdf',
     'application/vnd.ms-powerpoint',
@@ -63,6 +65,15 @@ const ALLOWED_STARTUP_READINESS_DOCUMENT_ASSET_MIME_TYPES = new Set([
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'text/csv',
+])
+const ALLOWED_STARTUP_DATA_ROOM_DOCUMENT_ASSET_MIME_TYPES = new Set([
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'text/csv',
+    'text/plain',
 ])
 
 function normalizeText(value: FormDataEntryValue | null): string | null {
@@ -141,6 +152,28 @@ function normalizeStartupPostStatus(value: FormDataEntryValue | null): StartupPo
 
     const normalized = value.trim().toLowerCase()
     if (normalized === 'draft' || normalized === 'published') {
+        return normalized
+    }
+
+    return null
+}
+
+function normalizeStartupDataRoomDocumentType(value: FormDataEntryValue | null): StartupDataRoomDocumentType | null {
+    if (typeof value !== 'string') {
+        return null
+    }
+
+    const normalized = value.trim().toLowerCase()
+    if (
+        normalized === 'pitch_deck'
+        || normalized === 'financial_model'
+        || normalized === 'cap_table'
+        || normalized === 'traction_metrics'
+        || normalized === 'legal_company_docs'
+        || normalized === 'incorporation_docs'
+        || normalized === 'customer_contracts_summaries'
+        || normalized === 'term_sheet_drafts'
+    ) {
         return normalized
     }
 
@@ -365,6 +398,51 @@ async function uploadStartupReadinessAsset(input: {
     })
     if (!uploadResponse.ok) {
         throw new Error('Readiness asset upload failed. Please try again.')
+    }
+
+    return {
+        publicUrl: payload.publicUrl ?? null,
+    }
+}
+
+async function uploadStartupDataRoomAsset(input: {
+    accessToken: string
+    orgId: string
+    documentType: StartupDataRoomDocumentType
+    file: File
+}): Promise<{ publicUrl: string | null }> {
+    const uploadConfig = await apiRequest<{
+        success: boolean
+        message: string | null
+        uploadUrl: string | null
+        publicUrl: string | null
+    }>({
+        path: '/files/startups/data-room/upload-url',
+        method: 'POST',
+        accessToken: input.accessToken,
+        body: {
+            orgId: input.orgId,
+            documentType: input.documentType,
+            fileName: input.file.name,
+            contentType: input.file.type,
+            contentLength: input.file.size,
+        },
+    })
+
+    const payload = uploadConfig
+    if (!payload?.success || !payload.uploadUrl) {
+        throw new Error(payload?.message ?? 'Unable to prepare data room upload right now.')
+    }
+
+    const uploadResponse = await fetch(payload.uploadUrl, {
+        method: 'PUT',
+        headers: {
+            'content-type': input.file.type,
+        },
+        body: input.file,
+    })
+    if (!uploadResponse.ok) {
+        throw new Error('Data room upload failed. Please try again.')
     }
 
     return {
@@ -964,6 +1042,181 @@ export async function updateStartupDiscoverySectionAction(
             name: 'workspace_action_failed',
             route: '/workspace/settings',
             action: 'updateStartupDiscoverySectionAction',
+            level: 'error',
+            message,
+            orgType: telemetryContext.orgType,
+            memberRole: telemetryContext.memberRole,
+        })
+        return { error: message, success: null }
+    }
+}
+
+export async function upsertStartupDataRoomDocumentSectionAction(
+    _previousState: SettingsSectionActionState,
+    formData: FormData
+): Promise<SettingsSectionActionState> {
+    const telemetryContext: {
+        orgType: string | null
+        memberRole: string | null
+    } = {
+        orgType: null,
+        memberRole: null,
+    }
+
+    try {
+        const { supabase, membership } = await requireOwnerSettingsContext()
+        telemetryContext.orgType = membership.organization.type
+        telemetryContext.memberRole = membership.member_role
+
+        if (membership.organization.type !== 'startup') {
+            return { error: 'Data room is available only for startup organizations.', success: null }
+        }
+
+        const documentType = normalizeStartupDataRoomDocumentType(formData.get('dataRoomDocumentType'))
+        const title = normalizeText(formData.get('dataRoomDocumentTitle'))
+        const summary = normalizeText(formData.get('dataRoomDocumentSummary'))
+        const file = normalizeUploadedFile(formData.get('dataRoomDocumentFile'))
+
+        if (!documentType) {
+            return { error: 'Data room document type is required.', success: null }
+        }
+
+        if (!title || title.length < 2) {
+            return { error: 'Data room document title must be at least 2 characters.', success: null }
+        }
+
+        if (!file) {
+            return { error: 'Select a file to upload.', success: null }
+        }
+
+        if (file.size > MAX_STARTUP_DATA_ROOM_ASSET_SIZE_BYTES) {
+            return { error: 'Data room file must be 100MB or smaller.', success: null }
+        }
+
+        const isPitchDeck = documentType === 'pitch_deck'
+        const allowedMimeTypes = isPitchDeck
+            ? ALLOWED_STARTUP_PITCH_DECK_ASSET_MIME_TYPES
+            : ALLOWED_STARTUP_DATA_ROOM_DOCUMENT_ASSET_MIME_TYPES
+        if (!allowedMimeTypes.has(file.type)) {
+            return {
+                error: isPitchDeck
+                    ? 'Pitch deck must be PDF/PPT/PPTX or MP4/WEBM/MOV.'
+                    : 'Data room document must be PDF, DOC/DOCX, XLS/XLSX, TXT, or CSV.',
+                success: null,
+            }
+        }
+
+        const {
+            data: { session },
+        } = await supabase.auth.getSession()
+        const accessToken = session?.access_token ?? null
+        if (!accessToken) {
+            return { error: 'Your session has expired. Please log in again.', success: null }
+        }
+
+        const uploadPayload = await uploadStartupDataRoomAsset({
+            accessToken,
+            orgId: membership.org_id,
+            documentType,
+            file,
+        })
+        const publicUrl = normalizeText(uploadPayload.publicUrl)
+        if (!publicUrl) {
+            return { error: 'Data room upload did not return a valid public URL.', success: null }
+        }
+
+        const mutation = await apiRequest<{ success: boolean; message: string | null }>({
+            path: '/startups/data-room/documents',
+            method: 'POST',
+            accessToken,
+            body: {
+                documentType,
+                title,
+                summary,
+                fileUrl: publicUrl,
+                fileName: normalizeText(file.name),
+                fileSizeBytes: file.size,
+                contentType: normalizeText(file.type),
+            },
+        })
+        if (!mutation?.success) {
+            return { error: mutation?.message ?? 'Unable to save data room document right now.', success: null }
+        }
+
+        revalidatePath('/workspace')
+        revalidatePath('/workspace/settings')
+        revalidateTag(WORKSPACE_IDENTITY_CACHE_TAG, 'max')
+
+        return { error: null, success: 'Data room document uploaded.' }
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to upload data room document right now.'
+        logServerTelemetry({
+            name: 'workspace_action_failed',
+            route: '/workspace/settings',
+            action: 'upsertStartupDataRoomDocumentSectionAction',
+            level: 'error',
+            message,
+            orgType: telemetryContext.orgType,
+            memberRole: telemetryContext.memberRole,
+        })
+        return { error: message, success: null }
+    }
+}
+
+export async function deleteStartupDataRoomDocumentSectionAction(
+    _previousState: SettingsSectionActionState,
+    formData: FormData
+): Promise<SettingsSectionActionState> {
+    const telemetryContext: {
+        orgType: string | null
+        memberRole: string | null
+    } = {
+        orgType: null,
+        memberRole: null,
+    }
+
+    try {
+        const { supabase, membership } = await requireOwnerSettingsContext()
+        telemetryContext.orgType = membership.organization.type
+        telemetryContext.memberRole = membership.member_role
+
+        if (membership.organization.type !== 'startup') {
+            return { error: 'Data room is available only for startup organizations.', success: null }
+        }
+
+        const documentId = normalizeText(formData.get('dataRoomDocumentId'))
+        if (!documentId) {
+            return { error: 'Data room document id is required.', success: null }
+        }
+
+        const {
+            data: { session },
+        } = await supabase.auth.getSession()
+        const accessToken = session?.access_token ?? null
+        if (!accessToken) {
+            return { error: 'Your session has expired. Please log in again.', success: null }
+        }
+
+        const mutation = await apiRequest<{ success: boolean; message: string | null }>({
+            path: `/startups/data-room/documents/${encodeURIComponent(documentId)}`,
+            method: 'DELETE',
+            accessToken,
+        })
+        if (!mutation?.success) {
+            return { error: mutation?.message ?? 'Unable to remove data room document right now.', success: null }
+        }
+
+        revalidatePath('/workspace')
+        revalidatePath('/workspace/settings')
+        revalidateTag(WORKSPACE_IDENTITY_CACHE_TAG, 'max')
+
+        return { error: null, success: 'Data room document removed.' }
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to remove data room document right now.'
+        logServerTelemetry({
+            name: 'workspace_action_failed',
+            route: '/workspace/settings',
+            action: 'deleteStartupDataRoomDocumentSectionAction',
             level: 'error',
             message,
             orgType: telemetryContext.orgType,

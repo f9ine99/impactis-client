@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
 /**
  * Match a CSS media query string (e.g. "(min-width: 768px)").
@@ -8,16 +8,17 @@ import { useEffect, useState } from 'react'
  * Safe for SSR: returns false until mounted.
  */
 export function useMediaQuery(query: string): boolean {
-    const [matches, setMatches] = useState(false)
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return
-        const mql = window.matchMedia(query)
-        setMatches(mql.matches)
-        const handler = (e: MediaQueryListEvent) => setMatches(e.matches)
-        mql.addEventListener('change', handler)
-        return () => mql.removeEventListener('change', handler)
-    }, [query])
-
-    return matches
+    return useSyncExternalStore(
+        (callback) => {
+            if (typeof window === 'undefined') return () => { }
+            const mql = window.matchMedia(query)
+            mql.addEventListener('change', callback)
+            return () => mql.removeEventListener('change', callback)
+        },
+        () => {
+            if (typeof window === 'undefined') return false
+            return window.matchMedia(query).matches
+        },
+        () => false
+    )
 }

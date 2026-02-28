@@ -48,6 +48,14 @@ import {
 import {
     getWorkspaceBootstrapForCurrentUser,
 } from '@/modules/workspace'
+import {
+    getBillingMeForCurrentUser,
+    getBillingPlansForCurrentUser,
+    type BillingMeteredFeatureGateResult,
+    resolveAdvisorProposalFeatureGate,
+    resolveConsultantRequestFeatureGate,
+    resolveInvestorProfileViewFeatureGate,
+} from '@/modules/billing'
 import StartupDiscoveryFeedPanel from './StartupDiscoveryFeedPanel'
 import WorkspaceThemeToggle from './WorkspaceThemeToggle'
 import WorkspaceUserMenu from './WorkspaceUserMenu'
@@ -339,13 +347,28 @@ function ReadinessScoreV2(input: {
 }
 
 function AdvisoryCreditsCard(input: {
-    available: number,
-    total: number,
+    available: number | null,
+    total: number | null,
+    used: number,
+    isUnlimited: boolean,
+    isBlocked: boolean,
+    message: string,
     isLight: boolean,
     textMainClassName: string,
     textMutedClassName: string
 }) {
-    const isFull = input.total > 0 && input.available >= input.total
+    const usageLabel = input.isUnlimited
+        ? 'Unlimited'
+        : `${input.available ?? 0}/${input.total ?? 0}`
+    const usageHint = input.isBlocked
+        ? input.message
+        : input.isUnlimited
+            ? 'No monthly cap on consultant requests.'
+            : `${input.used} used this period.`
+    const helperClass = input.isBlocked
+        ? 'text-rose-500'
+        : input.textMutedClassName
+
     return (
         <div className={`relative overflow-hidden rounded-[2.5rem] border p-6 transition-all hover:shadow-xl hover:shadow-emerald-500/5 ${input.isLight ? 'border-slate-200 bg-white' : 'border-white/5 bg-slate-900/40 backdrop-blur-3xl'}`}>
             <div className="flex items-start justify-between">
@@ -358,13 +381,25 @@ function AdvisoryCreditsCard(input: {
             <div className="mt-6">
                 <p className={`text-sm font-bold ${input.textMutedClassName}`}>Advisory Credits</p>
                 <div className="mt-2 flex items-baseline gap-2">
-                    <span className={`text-4xl font-black tracking-tight ${input.textMainClassName}`}>{input.available}/{input.total}</span>
-                    {isFull && <span className="text-sm font-black text-emerald-500">Full</span>}
+                    <span className={`text-4xl font-black tracking-tight ${input.textMainClassName}`}>{usageLabel}</span>
                 </div>
+                <p className={`mt-2 text-[11px] ${helperClass}`}>{usageHint}</p>
+                {input.isBlocked ? (
+                    <Link
+                        href="/workspace/settings?section=settings-billing"
+                        className={`mt-4 inline-flex w-fit items-center gap-1.5 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors ${input.isLight
+                            ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
+                            : 'border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20'
+                            }`}
+                    >
+                        Upgrade Plan <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                ) : null}
             </div>
         </div>
     )
 }
+
 
 function SidebarNavLink(input: {
     href: string
@@ -401,13 +436,20 @@ function SidebarNavLink(input: {
 function AdvisorInboxPanel(input: {
     incomingRequests: EngagementRequest[]
     verificationStatus: OrganizationVerificationStatus
+    proposalFeatureGate: BillingMeteredFeatureGateResult | null
     cardClassName: string
     mutedCardClassName: string
     textMainClassName: string
     textMutedClassName: string
     tableRowClassName: string
 }) {
-    const canRespond = input.verificationStatus === 'approved'
+    const proposalGateBlocked = input.proposalFeatureGate ? !input.proposalFeatureGate.allowed : false
+    const proposalUsageLabel = input.proposalFeatureGate
+        ? input.proposalFeatureGate.unlimited
+            ? 'Unlimited proposals'
+            : `${input.proposalFeatureGate.remaining ?? 0}/${input.proposalFeatureGate.limit ?? 0} proposals left`
+        : null
+    const canRespond = input.verificationStatus === 'approved' && !proposalGateBlocked
 
     return (
         <Card className={input.cardClassName}>
@@ -416,6 +458,11 @@ function AdvisorInboxPanel(input: {
                 <CardDescription className={`text-xs ${input.textMutedClassName}`}>
                     Review and process startup requests.
                 </CardDescription>
+                {proposalUsageLabel ? (
+                    <p className={`text-[11px] font-medium ${proposalGateBlocked ? 'text-rose-500' : input.textMutedClassName}`}>
+                        {proposalGateBlocked ? input.proposalFeatureGate?.message : proposalUsageLabel}
+                    </p>
+                ) : null}
             </CardHeader>
             <CardContent className="pt-0">
                 {input.incomingRequests.length === 0 ? (
@@ -458,6 +505,16 @@ function AdvisorInboxPanel(input: {
                                                             Reject
                                                         </Button>
                                                     </form>
+                                                ) : proposalGateBlocked ? (
+                                                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-rose-500">
+                                                        <span>{input.proposalFeatureGate?.message}</span>
+                                                        <Link
+                                                            href="/workspace/settings?section=settings-billing"
+                                                            className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider"
+                                                        >
+                                                            Upgrade <ArrowRight className="h-3 w-3" />
+                                                        </Link>
+                                                    </div>
                                                 ) : (
                                                     <p className="text-[11px] font-medium text-amber-600 dark:text-amber-500/80">
                                                         Account approval required to process requests.
@@ -582,6 +639,52 @@ function InvestorReadinessCard(input: {
             >
                 Complete profile <ArrowRight className="h-3.5 w-3.5" />
             </Link>
+        </div>
+    )
+}
+
+function InvestorProfileViewsCard(input: {
+    featureGate: BillingMeteredFeatureGateResult
+    isLight: boolean
+    textMainClassName: string
+    textMutedClassName: string
+}) {
+    const usageLabel = input.featureGate.unlimited
+        ? 'Unlimited'
+        : `${input.featureGate.remaining ?? 0}/${input.featureGate.limit ?? 0}`
+    const usageHint = !input.featureGate.allowed
+        ? input.featureGate.message
+        : input.featureGate.unlimited
+            ? 'No monthly cap on full startup profile views.'
+            : `${input.featureGate.used} used this period.`
+
+    return (
+        <div className={`relative overflow-hidden rounded-[2.5rem] border p-6 transition-all hover:shadow-xl hover:shadow-emerald-500/5 ${input.isLight ? 'border-slate-200 bg-white' : 'border-white/5 bg-slate-900/40 backdrop-blur-3xl'}`}>
+            <div className="flex items-start justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500">
+                    <ShieldCheck className="h-6 w-6" />
+                </div>
+                <div className={`text-[10px] font-black uppercase tracking-widest opacity-40 ${input.textMainClassName}`}>Profile Views</div>
+            </div>
+
+            <div className="mt-6">
+                <p className={`text-sm font-bold ${input.textMutedClassName}`}>Investor View Credits</p>
+                <div className="mt-2 flex items-baseline gap-2">
+                    <span className={`text-4xl font-black tracking-tight ${input.textMainClassName}`}>{usageLabel}</span>
+                </div>
+                <p className={`mt-2 text-[11px] ${input.featureGate.allowed ? input.textMutedClassName : 'text-rose-500'}`}>{usageHint}</p>
+                {!input.featureGate.allowed ? (
+                    <Link
+                        href="/workspace/settings?section=settings-billing"
+                        className={`mt-4 inline-flex w-fit items-center gap-1.5 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors ${input.isLight
+                            ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
+                            : 'border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20'
+                            }`}
+                    >
+                        Upgrade Plan <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                ) : null}
+            </div>
         </div>
     )
 }
@@ -761,6 +864,37 @@ export default async function WorkspacePage() {
             ? (bootstrapSnapshot.startup_readiness ?? null)
             : null
     const organizationReadiness = bootstrapSnapshot.organization_readiness ?? null
+    const [billingSnapshot, billingPlansSnapshot] = await Promise.all([
+        getBillingMeForCurrentUser(supabase),
+        getBillingPlansForCurrentUser(supabase, { segment: membership.organization.type }),
+    ])
+    const consultantRequestFeatureGate = membership.organization.type === 'startup'
+        ? resolveConsultantRequestFeatureGate({
+            currentPlan: billingSnapshot ?? currentPlan,
+            plans: billingPlansSnapshot.plans,
+            usage: billingSnapshot?.usage ?? [],
+        })
+        : null
+    const advisorProposalFeatureGate = membership.organization.type === 'advisor'
+        ? resolveAdvisorProposalFeatureGate({
+            currentPlan: billingSnapshot ?? currentPlan,
+            plans: billingPlansSnapshot.plans,
+            usage: billingSnapshot?.usage ?? [],
+        })
+        : null
+    const investorProfileViewFeatureGate = membership.organization.type === 'investor'
+        ? resolveInvestorProfileViewFeatureGate({
+            currentPlan: billingSnapshot ?? currentPlan,
+            plans: billingPlansSnapshot.plans,
+            usage: billingSnapshot?.usage ?? [],
+        })
+        : null
+    const advisoryCreditsTotal = consultantRequestFeatureGate
+        ? (consultantRequestFeatureGate.unlimited ? null : consultantRequestFeatureGate.limit ?? 0)
+        : 0
+    const advisoryCreditsAvailable = consultantRequestFeatureGate
+        ? (consultantRequestFeatureGate.unlimited ? null : consultantRequestFeatureGate.remaining ?? 0)
+        : 0
 
     const engagementRequests: EngagementRequest[] = []
     const startupDiscoveryFeed: StartupDiscoveryFeedItem[] = bootstrapSnapshot.startup_discovery_feed ?? []
@@ -807,8 +941,6 @@ export default async function WorkspacePage() {
     const tableRowClass = isLight
         ? 'border-slate-100 hover:bg-slate-50/50'
         : 'border-slate-800 hover:bg-slate-900/70'
-    const advisoryCreditsTotal = 5
-    const advisoryCreditsAvailable = 5
 
     const currentHour = new Date().getHours()
     const greeting = getGreetingForHour(currentHour)
@@ -911,6 +1043,7 @@ export default async function WorkspacePage() {
                                 <AdvisorInboxPanel
                                     incomingRequests={engagementRequests.filter((request) => request.advisor_org_id === membership.org_id)}
                                     verificationStatus={verificationStatus}
+                                    proposalFeatureGate={advisorProposalFeatureGate}
                                     cardClassName={`${panelClass} border-none shadow-none rounded-[3rem] p-8`}
                                     mutedCardClassName={mutedPanelClass}
                                     textMainClassName={textMainClass}
@@ -927,15 +1060,35 @@ export default async function WorkspacePage() {
                                             <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${textMutedClass}`}>Published Startup Opportunities</p>
                                         </div>
                                     </div>
-                                    <StartupDiscoveryFeedPanel
-                                        currentOrgId={membership.org_id}
-                                        feed={startupDiscoveryFeed}
-                                        isLight={isLight}
-                                        cardClassName={`${panelClass} border-none shadow-none rounded-[3rem]`}
-                                        mutedCardClassName={mutedPanelClass}
-                                        textMainClassName={textMainClass}
-                                        textMutedClassName={textMutedClass}
-                                    />
+                                    {investorProfileViewFeatureGate && !investorProfileViewFeatureGate.allowed ? (
+                                        <div className={`rounded-[2.5rem] border p-8 ${isLight ? 'border-rose-200 bg-rose-50/70' : 'border-rose-500/30 bg-rose-500/10'}`}>
+                                            <p className={`text-sm font-bold ${isLight ? 'text-rose-700' : 'text-rose-300'}`}>
+                                                Full startup profile views are currently locked.
+                                            </p>
+                                            <p className={`mt-2 text-[11px] ${isLight ? 'text-rose-700/80' : 'text-rose-300/80'}`}>
+                                                {investorProfileViewFeatureGate.message}
+                                            </p>
+                                            <Link
+                                                href="/workspace/settings?section=settings-billing"
+                                                className={`mt-4 inline-flex w-fit items-center gap-1.5 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors ${isLight
+                                                    ? 'border-rose-200 bg-white text-rose-700 hover:bg-rose-100'
+                                                    : 'border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20'
+                                                    }`}
+                                            >
+                                                Upgrade Plan <ArrowRight className="h-3.5 w-3.5" />
+                                            </Link>
+                                        </div>
+                                    ) : (
+                                        <StartupDiscoveryFeedPanel
+                                            currentOrgId={membership.org_id}
+                                            feed={startupDiscoveryFeed}
+                                            isLight={isLight}
+                                            cardClassName={`${panelClass} border-none shadow-none rounded-[3rem]`}
+                                            mutedCardClassName={mutedPanelClass}
+                                            textMainClassName={textMainClass}
+                                            textMutedClassName={textMutedClass}
+                                        />
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -958,6 +1111,10 @@ export default async function WorkspacePage() {
                                     <AdvisoryCreditsCard
                                         available={advisoryCreditsAvailable}
                                         total={advisoryCreditsTotal}
+                                        used={consultantRequestFeatureGate?.used ?? 0}
+                                        isUnlimited={consultantRequestFeatureGate?.unlimited ?? false}
+                                        isBlocked={consultantRequestFeatureGate ? !consultantRequestFeatureGate.allowed : false}
+                                        message={consultantRequestFeatureGate?.message ?? 'Unable to load consultant request limits.'}
                                         isLight={isLight}
                                         textMainClassName={textMainClass}
                                         textMutedClassName={textMutedClass}
@@ -975,6 +1132,15 @@ export default async function WorkspacePage() {
                                     textMutedClassName={textMutedClass}
                                 />
                             )}
+
+                            {membership.organization.type === 'investor' && investorProfileViewFeatureGate ? (
+                                <InvestorProfileViewsCard
+                                    featureGate={investorProfileViewFeatureGate}
+                                    isLight={isLight}
+                                    textMainClassName={textMainClass}
+                                    textMutedClassName={textMutedClass}
+                                />
+                            ) : null}
 
                             <CoreTeamPanel
                                 members={organizationCoreTeam}

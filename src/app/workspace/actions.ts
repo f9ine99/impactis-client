@@ -7,6 +7,12 @@ import {
     getOrganizationVerificationStatusByOrgId,
     getPrimaryOrganizationMembershipForUser,
 } from '@/modules/organizations'
+import {
+    getBillingMeForCurrentUser,
+    getBillingPlansForCurrentUser,
+    resolveConsultantRequestFeatureGate,
+    resolveAdvisorProposalFeatureGate,
+} from '@/modules/billing'
 import { apiRequest } from '@/lib/api/rest-client'
 
 function normalizeText(value: FormDataEntryValue | null): string | null {
@@ -59,6 +65,20 @@ export async function sendEngagementRequestAction(formData: FormData): Promise<v
         }
         telemetryContext.orgType = membership.organization.type
         telemetryContext.memberRole = membership.member_role
+
+        const [billingSnapshot, billingPlansSnapshot] = await Promise.all([
+            getBillingMeForCurrentUser(supabase),
+            getBillingPlansForCurrentUser(supabase, { segment: membership.organization.type }),
+        ])
+        const consultantRequestFeatureGate = resolveConsultantRequestFeatureGate({
+            currentPlan: billingSnapshot,
+            plans: billingPlansSnapshot.plans,
+            usage: billingSnapshot?.usage ?? [],
+        })
+
+        if (!consultantRequestFeatureGate.allowed) {
+            throw new Error(consultantRequestFeatureGate.message)
+        }
 
         const advisorOrgId = normalizeText(formData.get('advisorOrgId'))
         if (!advisorOrgId) {
@@ -199,6 +219,20 @@ export async function respondEngagementRequestAction(formData: FormData): Promis
         }
         telemetryContext.orgType = membership.organization.type
         telemetryContext.memberRole = membership.member_role
+
+        const [billingSnapshot, billingPlansSnapshot] = await Promise.all([
+            getBillingMeForCurrentUser(supabase),
+            getBillingPlansForCurrentUser(supabase, { segment: membership.organization.type }),
+        ])
+        const advisorProposalFeatureGate = resolveAdvisorProposalFeatureGate({
+            currentPlan: billingSnapshot,
+            plans: billingPlansSnapshot.plans,
+            usage: billingSnapshot?.usage ?? [],
+        })
+
+        if (!advisorProposalFeatureGate.allowed) {
+            throw new Error(advisorProposalFeatureGate.message)
+        }
 
         const verificationStatus = await getOrganizationVerificationStatusByOrgId(supabase, membership.org_id)
         if (verificationStatus !== 'approved') {
