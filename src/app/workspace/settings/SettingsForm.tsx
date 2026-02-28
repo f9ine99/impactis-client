@@ -61,6 +61,7 @@ type SettingsFormProps = {
     defaultStartupPostStatus: StartupPostStatus
     startupReadiness: StartupReadiness | null
     sectionView?: 'identity' | 'readiness' | 'discovery'
+    canEdit: boolean
     isLight?: boolean
 }
 
@@ -126,36 +127,45 @@ export default function SettingsForm(props: SettingsFormProps) {
                     </p>
                 </div>
 
-                <div className={cn('flex items-center gap-1 rounded-xl border p-1',
-                    isLight ? 'border-slate-200 bg-slate-100/50' : 'border-white/5 bg-slate-950/40'
-                )}>
-                    <button
-                        type="button"
-                        onClick={() => setIsEditMode(false)}
-                        className={cn(
-                            'flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300',
-                            !isEditMode
-                                ? 'bg-blue-600 shadow-lg shadow-blue-500/25 text-white'
-                                : isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200'
-                        )}
-                    >
-                        <Eye className="h-3 w-3" />
-                        ReadOnly
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setIsEditMode(true)}
-                        className={cn(
-                            'flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300',
-                            isEditMode
-                                ? 'bg-blue-600 shadow-lg shadow-blue-500/25 text-white'
-                                : isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200'
-                        )}
-                    >
-                        <Pencil className="h-3 w-3" />
-                        Edit Mode
-                    </button>
-                </div>
+                {props.canEdit ? (
+                    <div className={cn('flex items-center gap-1 rounded-xl border p-1',
+                        isLight ? 'border-slate-200 bg-slate-100/50' : 'border-white/5 bg-slate-950/40'
+                    )}>
+                        <button
+                            type="button"
+                            onClick={() => setIsEditMode(false)}
+                            className={cn(
+                                'flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300',
+                                !isEditMode
+                                    ? 'bg-blue-600 shadow-lg shadow-blue-500/25 text-white'
+                                    : isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200'
+                            )}
+                        >
+                            <Eye className="h-3 w-3" />
+                            ReadOnly
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setIsEditMode(true)}
+                            className={cn(
+                                'flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300',
+                                isEditMode
+                                    ? 'bg-blue-600 shadow-lg shadow-blue-500/25 text-white'
+                                    : isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200'
+                            )}
+                        >
+                            <Pencil className="h-3 w-3" />
+                            Edit Mode
+                        </button>
+                    </div>
+                ) : (
+                    <div className={cn('flex items-center gap-2 px-4 py-2 rounded-xl border',
+                        isLight ? 'border-slate-100 bg-slate-50 text-slate-400 italic' : 'border-white/5 bg-slate-950/50 text-slate-500 italic'
+                    )}>
+                        <Eye className="h-3 w-3 opacity-50" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Permanent ReadOnly</span>
+                    </div>
+                )}
             </div>
 
             <div className="relative">
