@@ -80,15 +80,11 @@ export default function BillingPlanManager({
         () => resolveAvailableIntervals(selectedPlan),
         [selectedPlan]
     )
-    const [selectedInterval, setSelectedInterval] = useState<BillingInterval | null>(
-        availableIntervals.includes(initialInterval) ? initialInterval : (availableIntervals[0] ?? null)
-    )
+    const [selectedIntervalOverride, setSelectedIntervalOverride] = useState<BillingInterval | null>(null)
 
-    useEffect(() => {
-        if (!selectedInterval || !availableIntervals.includes(selectedInterval)) {
-            setSelectedInterval(availableIntervals[0] ?? null)
-        }
-    }, [availableIntervals, selectedInterval])
+    const selectedInterval = (selectedIntervalOverride && availableIntervals.includes(selectedIntervalOverride))
+        ? selectedIntervalOverride
+        : (availableIntervals.includes(initialInterval) ? initialInterval : (availableIntervals[0] ?? null))
 
     useEffect(() => {
         if (!notice.success) {
@@ -127,8 +123,8 @@ export default function BillingPlanManager({
     }, [portalNotice.error])
 
     const shellClass = isLight
-        ? 'border-slate-200 bg-white/90'
-        : 'border-slate-800 bg-slate-900/70'
+        ? 'border-slate-200 bg-white/60 shadow-xl backdrop-blur-3xl'
+        : 'border-slate-800 bg-slate-900/40 shadow-2xl backdrop-blur-3xl'
     const mutedPanelClass = isLight
         ? 'border-slate-200 bg-slate-50'
         : 'border-slate-800 bg-slate-950/70'
@@ -148,161 +144,183 @@ export default function BillingPlanManager({
     }
 
     return (
-        <div className={`space-y-6 rounded-3xl border p-6 ${shellClass}`}>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <p className={`text-xs font-black uppercase tracking-[0.14em] ${textMutedClass}`}>Subscription Plan</p>
-                    <h3 className={`mt-1 text-2xl font-black tracking-tight ${titleClass}`}>Choose Your Plan</h3>
+        <div className={`rounded-3xl border p-6 ${mutedPanelClass} shadow-xl backdrop-blur-2xl`}>
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <div className={`rounded-xl border p-2 shadow-sm ${isLight ? 'bg-white border-slate-200' : 'bg-slate-950 border-slate-800'}`}>
+                        <Sparkles className="h-4 w-4 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
+                    </div>
+                    <div>
+                        <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${textMutedClass}`}>Subscription Plan</p>
+                        <p className={`text-[10px] font-bold ${textMutedClass}`}>Choose and manage your environment tier</p>
+                    </div>
                 </div>
                 {currentPlan ? (
-                    <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/5 text-emerald-500">
-                        Current: {currentPlan.plan.name}
-                    </Badge>
+                    <div className={`flex items-center gap-2.5 rounded-xl border px-3 py-1.5 shadow-sm ${isLight ? 'bg-white' : 'bg-slate-900/50'}`}>
+                        <span className={`text-[10px] font-black uppercase tracking-tight ${textMutedClass}`}>Active Plan</span>
+                        <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/5 text-emerald-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">
+                            {currentPlan.plan.name}
+                        </Badge>
+                    </div>
                 ) : null}
             </div>
 
-            <form action={action} className="space-y-6">
+            <form action={action} className="divide-y divide-slate-200/5">
                 <input type="hidden" name="planCode" value={selectedPlanCode} />
                 {selectedInterval ? <input type="hidden" name="billingInterval" value={selectedInterval} /> : null}
 
-                <div className="grid gap-4 lg:grid-cols-3">
-                    {sortedPlans.map((plan) => {
-                        const isSelected = selectedPlanCode === plan.plan_code
-                        const monthlyLabel = formatCurrencyFromCents(plan.pricing.monthly_price_cents, plan.pricing.currency)
-                        const annualLabel = formatCurrencyFromCents(plan.pricing.annual_price_cents, plan.pricing.currency)
-                        const isCurrent = currentPlan?.plan.code === plan.plan_code
-
-                        return (
-                            <button
-                                key={plan.plan_code}
-                                type="button"
-                                onClick={() => setSelectedPlanCode(plan.plan_code)}
-                                className={`text-left rounded-2xl border p-4 transition-all ${isSelected
-                                    ? (isLight
-                                        ? 'border-emerald-300 bg-emerald-50'
-                                        : 'border-emerald-500/40 bg-emerald-500/10')
-                                    : mutedPanelClass
-                                    }`}
-                            >
-                                <div className="flex items-center justify-between gap-2">
-                                    <p className={`text-base font-black ${titleClass}`}>{plan.display_name}</p>
-                                    <div className="flex items-center gap-2">
-                                        {isCurrent ? <Badge variant="success">Current</Badge> : null}
-                                        <Badge variant="outline">Tier {plan.tier}</Badge>
-                                    </div>
-                                </div>
-                                <div className="mt-3 space-y-1">
-                                    <p className={`text-sm font-semibold ${titleClass}`}>
-                                        {monthlyLabel ? `${monthlyLabel} / month` : 'No monthly price'}
-                                    </p>
-                                    <p className={`text-sm ${textMutedClass}`}>
-                                        {annualLabel ? `${annualLabel} / year` : 'No annual price'}
-                                    </p>
-                                </div>
-                                <div className="mt-4 space-y-1">
-                                    {plan.features.slice(0, 4).map((feature) => (
-                                        <p key={feature.key} className={`text-xs ${textMutedClass}`}>
-                                            - {feature.label}
-                                        </p>
-                                    ))}
-                                </div>
-                            </button>
-                        )
-                    })}
-                </div>
-
-                <div className={`rounded-2xl border p-4 ${mutedPanelClass}`}>
-                    <p className={`text-xs font-black uppercase tracking-[0.14em] ${textMutedClass}`}>Billing Interval</p>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                        {availableIntervals.map((interval) => {
-                            const isSelectedInterval = selectedInterval === interval
-                            const label = interval === 'annual' ? 'Annual' : 'Monthly'
-                            return (
-                                <button
-                                    key={interval}
-                                    type="button"
-                                    onClick={() => setSelectedInterval(interval)}
-                                    className={`flex items-center justify-between rounded-xl border px-3 py-2 text-sm font-semibold transition-all ${isSelectedInterval
-                                        ? (isLight
-                                            ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
-                                            : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300')
-                                        : (isLight
-                                            ? 'border-slate-200 bg-white text-slate-700'
-                                            : 'border-slate-700 bg-slate-900 text-slate-300')
-                                        }`}
-                                >
-                                    <span>{label}</span>
-                                    <CircleDollarSign className="h-4 w-4" />
-                                </button>
-                            )
-                        })}
-                    </div>
-                    {availableIntervals.length < 1 ? (
-                        <p className={`mt-3 text-sm ${textMutedClass}`}>
-                            The selected plan does not have active billing intervals.
+                {/* Plan Selection Row */}
+                <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 first:pt-0">
+                    <div className="md:col-span-1">
+                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${textMutedClass}`}>
+                            Available Plans
+                        </label>
+                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                            Select a tier that matches your organization's scale and required features.
                         </p>
-                    ) : null}
+                    </div>
+                    <div className="md:col-span-2">
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {sortedPlans.map((plan) => {
+                                const isSelected = selectedPlanCode === plan.plan_code
+                                const monthlyLabel = formatCurrencyFromCents(plan.pricing.monthly_price_cents, plan.pricing.currency)
+                                const annualLabel = formatCurrencyFromCents(plan.pricing.annual_price_cents, plan.pricing.currency)
+                                const isCurrent = currentPlan?.plan.code === plan.plan_code
+
+                                return (
+                                    <button
+                                        key={plan.plan_code}
+                                        type="button"
+                                        onClick={() => setSelectedPlanCode(plan.plan_code)}
+                                        className={`text-left rounded-2xl border p-4 transition-all hover:scale-[1.02] active:scale-95 ${isSelected
+                                            ? (isLight
+                                                ? 'border-emerald-300 bg-emerald-50 shadow-md ring-1 ring-emerald-300/20'
+                                                : 'border-emerald-500/40 bg-emerald-500/10 shadow-lg shadow-emerald-500/5 ring-1 ring-emerald-500/20')
+                                            : (isLight ? 'border-slate-200 bg-white hover:bg-slate-50' : 'border-slate-800 bg-slate-900/50 hover:bg-slate-900')
+                                            }`}
+                                    >
+                                        <div className="flex flex-col gap-1">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <p className={`text-xs font-black uppercase tracking-tight ${titleClass}`}>{plan.display_name}</p>
+                                                {isCurrent ? <Badge variant="success" className="h-4 px-1 text-[8px] font-black uppercase tracking-tighter">Active</Badge> : null}
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
+                                                <p className={`text-[10px] font-black text-emerald-500`}>
+                                                    {monthlyLabel || 'FREE'}
+                                                </p>
+                                                <div className="h-1 w-1 rounded-full bg-slate-300" />
+                                                <Badge variant="outline" className="h-4 border-slate-200 px-1 text-[8px] font-bold text-slate-500">Tier {plan.tier}</Badge>
+                                            </div>
+                                        </div>
+                                        <div className="mt-3 space-y-1 opacity-80">
+                                            {plan.features.slice(0, 3).map((feature) => (
+                                                <p key={feature.key} className={`text-[9px] font-bold leading-tight ${textMutedClass}`}>
+                                                    • {feature.label}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </div>
                 </div>
 
-                {notice.error ? (
-                    <ActionFeedback
-                        tone="error"
-                        title="Subscription update failed"
-                        message={notice.error}
-                        isLight={isLight}
-                    />
-                ) : null}
-
-                {notice.success ? (
-                    <ActionFeedback
-                        tone="success"
-                        title="Subscription updated"
-                        message={notice.success}
-                        isLight={isLight}
-                    />
-                ) : null}
-
-                {!canManage ? (
-                    <p className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
-                        Only owner or admin can update subscription settings.
-                    </p>
-                ) : null}
-
-                <div className={`flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-3 ${mutedPanelClass}`}>
-                    <div className="flex items-center gap-2">
-                        <Sparkles className="h-4 w-4 text-emerald-500" />
-                        <p className={`text-sm ${textMutedClass}`}>Paid plans continue in Stripe checkout. Free plan changes apply immediately.</p>
+                {/* Billing Interval Row */}
+                <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
+                    <div className="md:col-span-1">
+                        <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] ${textMutedClass}`}>
+                            Billing Interval
+                        </label>
+                        <p className={`text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
+                            Choose between flexible monthly billing or discounted annual payments.
+                        </p>
                     </div>
-                    <Button
-                        type="submit"
-                        disabled={!canManage || isPending || !selectedPlan || !selectedInterval}
-                    >
-                        {isPending ? 'Updating Plan...' : 'Update Subscription'}
-                    </Button>
+                    <div className="md:col-span-2">
+                        <div className="grid gap-3 sm:grid-cols-2 max-w-xl">
+                            {availableIntervals.map((interval) => {
+                                const isSelectedInterval = selectedInterval === interval
+                                const label = interval === 'annual' ? 'Annual (Best Value)' : 'Monthly'
+                                return (
+                                    <button
+                                        key={interval}
+                                        type="button"
+                                        onClick={() => setSelectedIntervalOverride(interval)}
+                                        className={`flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-black uppercase tracking-widest transition-all active:scale-95 ${isSelectedInterval
+                                            ? (isLight
+                                                ? 'border-emerald-300 bg-emerald-50 text-emerald-700 shadow-sm'
+                                                : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300 shadow-emerald-500/10')
+                                            : (isLight
+                                                ? 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                                                : 'border-slate-800 bg-slate-900 text-slate-400 hover:bg-slate-800')
+                                            }`}
+                                    >
+                                        <span className="text-[10px]">{label}</span>
+                                        <CircleDollarSign className={`h-4 w-4 ${isSelectedInterval ? 'text-emerald-500' : 'opacity-40'}`} />
+                                    </button>
+                                )
+                            })}
+                        </div>
+                        {availableIntervals.length < 1 ? (
+                            <p className={`mt-3 text-[10px] font-bold text-amber-600 italic`}>
+                                No active billing intervals for the selected plan.
+                            </p>
+                        ) : null}
+                    </div>
+                </div>
+
+                {/* Save Action Row */}
+                <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 border-t border-slate-200/5 items-center">
+                    <div className="md:col-span-1">
+                        <div className="flex items-center gap-2">
+                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+                            <p className={`text-[10px] font-black uppercase tracking-widest ${textMutedClass}`}>Finalize Subscription</p>
+                        </div>
+                        <p className={`mt-1 text-[11px] font-bold ${textMutedClass}`}>Changes apply immediately or via Stripe Portal.</p>
+                    </div>
+                    <div className="md:col-span-2">
+                        <div className="flex flex-col gap-4">
+                            <Button
+                                type="submit"
+                                disabled={!canManage || isPending || !selectedPlan || !selectedInterval}
+                                className="w-fit h-10 px-8 font-black uppercase tracking-widest shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95"
+                            >
+                                {isPending ? 'Synchronizing...' : 'Update Subscription'}
+                            </Button>
+                            {!canManage ? (
+                                <p className="text-[10px] font-bold text-amber-600/80 uppercase tracking-tighter">Requires administrator privileges.</p>
+                            ) : null}
+                            {notice.error ? (
+                                <div className="max-w-xl">
+                                    <ActionFeedback tone="error" title="Update failed" message={notice.error} isLight={isLight} />
+                                </div>
+                            ) : null}
+                            {notice.success ? (
+                                <div className="max-w-xl">
+                                    <ActionFeedback tone="success" title="Plan Synchronized" message={notice.success} isLight={isLight} />
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
                 </div>
             </form>
 
-            {portalNotice.error ? (
-                <ActionFeedback
-                    tone="error"
-                    title="Billing portal unavailable"
-                    message={portalNotice.error}
-                    isLight={isLight}
-                />
-            ) : null}
-
-            <form action={portalAction} className={`rounded-2xl border p-3 ${mutedPanelClass}`}>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className={`text-sm ${textMutedClass}`}>
-                        Need invoices, payment method, or existing subscription controls?
-                    </p>
-                    <Button
-                        type="submit"
-                        variant="outline"
-                        disabled={!canManage || isPortalPending}
-                    >
-                        {isPortalPending ? 'Opening Portal...' : 'Open Stripe Billing Portal'}
-                    </Button>
+            <form action={portalAction} className="mt-8 border-t border-slate-200/5 pt-8">
+                <div className="grid gap-4 md:grid-cols-3 md:gap-8 items-center">
+                    <div className="md:col-span-1">
+                        <p className={`text-[10px] font-black uppercase tracking-widest ${textMutedClass}`}>External Controls</p>
+                        <p className={`mt-1 text-[11px] font-bold ${textMutedClass}`}>Manage invoices and payment methods.</p>
+                    </div>
+                    <div className="md:col-span-2">
+                        <Button
+                            type="submit"
+                            variant="outline"
+                            disabled={!canManage || isPortalPending}
+                            className="w-fit h-9 px-6 text-[10px] font-black uppercase tracking-[0.12em] border-slate-200/60 hover:bg-slate-100 transition-all"
+                        >
+                            {isPortalPending ? 'Opening Portal...' : 'Open Stripe Billing Portal'}
+                        </Button>
+                    </div>
                 </div>
             </form>
         </div>
