@@ -2,18 +2,20 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
+    ArrowLeft,
     ArrowUpRight,
     Bell,
     Building2,
+    ChevronRight,
     CircleDollarSign,
     ClipboardList,
     FolderLock,
     Gauge,
-    LayoutDashboard,
     Rocket,
     Settings2,
     ShieldCheck,
     Users,
+    LogOut,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { Badge, type BadgeProps } from '@/components/ui/badge'
@@ -525,63 +527,82 @@ export default async function WorkspaceSettingsPage({
 
     return (
         <main data-workspace-root="true" className={`flex h-screen w-full overflow-hidden ${pageShellClass}`}>
-            {/* Sidebar: Intelligence Column & Navigation */}
-            <aside className={`flex w-80 flex-col border-r ${panelClass} backdrop-blur-3xl shadow-2xl z-20`}>
-                {/* Sidebar Header: Organization Identity */}
-                <div className={`p-6 border-b ${isLight ? 'border-slate-100' : 'border-slate-800'}`}>
-                    <div className="flex items-center gap-4 mb-6">
-                        <Avatar className={`h-12 w-12 border-2 ${isLight ? 'border-white shadow-sm' : 'border-slate-800 shadow-md'}`}>
-                            <AvatarImage src={membership.organization.logo_url ?? undefined} alt="Org logo" />
-                            <AvatarFallback className={`text-sm font-black ${isLight ? 'bg-slate-100 text-slate-400' : 'bg-slate-800 text-slate-500'}`}>
-                                {getAcronym(membership.organization.name)}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0">
-                            <h1 className={`text-base font-black tracking-tight truncate ${textMainClass}`}>
+            {/* ═══════════════════ Professional Sidebar ═══════════════════ */}
+            <aside className={`relative flex w-[310px] shrink-0 flex-col overflow-hidden z-20 ${isLight
+                ? 'border-r border-slate-200/80 bg-white'
+                : 'border-r border-white/[0.04] bg-[#0a0e1a]'
+                }`}>
+                {/* Ambient gradient */}
+                <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+                    <div className={`absolute -left-20 -top-20 h-[280px] w-[280px] rounded-full blur-[100px] ${isLight ? 'bg-emerald-500/[0.04]' : 'bg-emerald-500/[0.06]'}`} />
+                    <div className={`absolute -bottom-16 -right-16 h-[200px] w-[200px] rounded-full blur-[80px] ${isLight ? 'bg-blue-500/[0.03]' : 'bg-blue-500/[0.04]'}`} />
+                </div>
+
+                {/* ─── Header ─── */}
+                <div className={`relative p-6 pb-5 ${isLight ? 'border-b border-slate-100' : 'border-b border-white/[0.04]'}`}>
+                    {/* Back Link */}
+                    <Link
+                        href="/workspace"
+                        className={`group mb-6 inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${isLight
+                            ? 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'
+                            : 'text-slate-500 hover:bg-slate-800/50 hover:text-slate-300'
+                            }`}
+                    >
+                        <ArrowLeft className="h-3 w-3 transition-transform group-hover:-translate-x-0.5" />
+                        Workspace
+                    </Link>
+
+                    {/* Organization Identity */}
+                    <div className="flex items-center gap-4">
+                        <div className="relative">
+                            <Avatar className={`h-11 w-11 ring-2 ${isLight ? 'ring-slate-200' : 'ring-slate-800'}`}>
+                                <AvatarImage src={membership.organization.logo_url ?? undefined} alt="Org logo" />
+                                <AvatarFallback className={`text-xs font-black ${isLight ? 'bg-gradient-to-br from-slate-100 to-slate-50 text-slate-400' : 'bg-gradient-to-br from-slate-800 to-slate-900 text-slate-500'}`}>
+                                    {getAcronym(membership.organization.name)}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className={`absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 ${isLight ? 'border-white bg-slate-100' : 'border-[#0a0e1a] bg-slate-800'}`}>
+                                <Building2 className={`h-2.5 w-2.5 ${textMutedClass}`} />
+                            </div>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <h1 className={`text-[15px] font-black tracking-tight truncate ${textMainClass}`}>
                                 {membership.organization.name}
                             </h1>
                             <div className="flex items-center gap-2 mt-0.5">
-                                <Badge variant={verificationMeta.variant} className="rounded-md px-1.5 py-0 text-[10px] font-black uppercase tracking-wider">
+                                <Badge variant={verificationMeta.variant} className="rounded-md px-1.5 py-0 text-[9px] font-black uppercase tracking-wider">
                                     {verificationMeta.label}
                                 </Badge>
-                                <span className={`text-[11px] font-black uppercase tracking-widest ${textMutedClass}`}>
+                                <span className={`text-[10px] font-bold uppercase tracking-widest ${textMutedClass}`}>
                                     {toTitleCase(membership.member_role)}
                                 </span>
                             </div>
                         </div>
                     </div>
-
-                    <Button
-                        asChild
-                        variant="ghost"
-                        size="sm"
-                        className={`w-full justify-start h-9 px-3 text-xs font-black uppercase tracking-widest transition-all ${isLight
-                            ? 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
-                            : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
-                            }`}
-                    >
-                        <Link href="/workspace">
-                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                            Back to Workspace
-                        </Link>
-                    </Button>
                 </div>
 
-                {/* Sidebar Content: Navigator + Intelligence */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-8 ws-sidebar-scroll">
-                    <div>
-                        <p className={`px-4 mb-3 text-xs font-black uppercase tracking-[0.2em] opacity-80 ${textMutedClass}`}>System Settings</p>
-                        <SettingsSectionNavigator
-                            sections={settingsProperties}
-                            isLight={isLight}
-                        />
-                    </div>
+                {/* ─── Navigation ─── */}
+                <div className="relative flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 ws-sidebar-scroll">
+                    <div className="space-y-8">
+                        <div>
+                            <p className={`mb-4 px-3 text-[9px] font-black uppercase tracking-[0.25em] ${textMutedClass} opacity-60`}>
+                                Organization Settings
+                            </p>
+                            <SettingsSectionNavigator
+                                sections={settingsProperties}
+                                isLight={isLight}
+                            />
+                        </div>
 
-                    <div className={`h-px w-full mx-2 ${isLight ? 'bg-slate-200/50' : 'bg-slate-800/50'}`} />
+                        {/* ─── Intelligence Section ─── */}
+                        <div className={`h-px w-full ${isLight ? 'bg-slate-100' : 'bg-white/[0.04]'}`} />
 
-                    <div>
-                        <p className={`px-4 mb-4 text-xs font-black uppercase tracking-[0.2em] opacity-80 ${textMutedClass}`}>Intelligence</p>
-                        <div className="space-y-6 px-2">
+                        <div className="space-y-5">
+                            <p className={`px-3 text-[9px] font-black uppercase tracking-[0.25em] ${textMutedClass} opacity-60`}>
+                                Intelligence
+                            </p>
+
+                            {/* Current Plan Card */}
                             <CurrentPlanSidebarCard
                                 currentPlan={currentPlan}
                                 isLight={isLight}
@@ -591,42 +612,70 @@ export default async function WorkspaceSettingsPage({
                                 textMutedClass={textMutedClass}
                             />
 
-                            <div className={`h-px w-full ${isLight ? 'bg-slate-200/50' : 'bg-slate-800/50'}`} />
-
                             {/* Readiness Intelligence (Startups Only) */}
                             {isStartupOrganization && (
-                                <div className="space-y-3 px-4 py-1">
-                                    <div className="flex items-center justify-between gap-2">
-                                        <div className="flex items-center gap-2">
-                                            <div className={`flex h-6 w-6 items-center justify-center rounded-lg border ${isLight ? 'bg-white border-slate-200' : 'bg-slate-950 border-slate-800'}`}>
-                                                <Gauge className="h-3.5 w-3.5 text-emerald-500" />
+                                <>
+                                    <div className={`h-px w-full ${isLight ? 'bg-slate-100' : 'bg-white/[0.04]'}`} />
+                                    <div className="space-y-3 px-3 py-1">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${isLight ? 'bg-blue-50 border border-blue-100' : 'bg-blue-500/10 border border-blue-500/20'}`}>
+                                                    <Gauge className="h-3.5 w-3.5 text-blue-500" />
+                                                </div>
+                                                <span className={`text-[10px] font-black uppercase tracking-widest ${textMainClass}`}>Readiness</span>
                                             </div>
-                                            <span className={`text-[10px] font-black uppercase tracking-widest ${textMainClass}`}>Readiness</span>
+                                            <Badge variant={readinessStatusVariant} className="rounded-md px-1.5 h-4 text-[9px] font-black uppercase tracking-tighter">
+                                                {readinessStatusLabel}
+                                            </Badge>
                                         </div>
-                                        <Badge variant={readinessStatusVariant} className="rounded-md px-1.5 h-4 text-[9px] font-black uppercase tracking-tighter">
-                                            {readinessStatusLabel}
-                                        </Badge>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                            <div className={`h-1.5 flex-1 overflow-hidden rounded-full ${isLight ? 'bg-slate-100' : 'bg-slate-800'}`}>
-                                                <div
-                                                    className="h-full bg-emerald-500 transition-all duration-1000 ws-shimmer"
-                                                    style={{ width: `${readinessScoreForBar}%` }}
-                                                />
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <div className={`h-2 flex-1 overflow-hidden rounded-full ${isLight ? 'bg-slate-100' : 'bg-slate-800'}`}>
+                                                    <div
+                                                        className="h-full rounded-full bg-emerald-500 transition-all duration-1000 ws-shimmer"
+                                                        style={{ width: `${readinessScoreForBar}%` }}
+                                                    />
+                                                </div>
+                                                <span className={`ml-3 text-[11px] font-black tracking-tight ${textMainClass}`}>
+                                                    {readinessScore === null ? 'N/A' : `${readinessScore}%`}
+                                                </span>
                                             </div>
-                                            <span className={`ml-3 text-[11px] font-black tracking-tight ${textMainClass}`}>
-                                                {readinessScore === null ? 'N/A' : `${readinessScore}%`}
-                                            </span>
                                         </div>
                                     </div>
-                                </div>
+                                </>
                             )}
                         </div>
                     </div>
                 </div>
 
+                {/* ─── Footer Action ─── */}
+                <div className={`relative p-4 ${isLight ? 'border-t border-slate-100' : 'border-t border-white/[0.04]'}`}>
+                    <form action="/auth/signout" method="post">
+                        <button
+                            type="submit"
+                            className={`group flex w-full items-center gap-3.5 rounded-2xl px-4 py-3.5 transition-all duration-300 ${isLight
+                                ? 'border border-rose-100 bg-rose-50/30 text-rose-600 hover:bg-rose-50 hover:border-rose-200 hover:shadow-sm'
+                                : 'border border-rose-500/10 bg-rose-500/[0.02] text-rose-400 hover:bg-rose-500/[0.06] hover:border-rose-500/20 hover:shadow-lg hover:shadow-rose-900/5'
+                                }`}
+                        >
+                            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${isLight
+                                ? 'bg-rose-100/80 group-hover:bg-rose-100'
+                                : 'bg-rose-500/10 group-hover:bg-rose-500/20'
+                                }`}>
+                                <LogOut className="h-4 w-4" />
+                            </div>
+                            <div className="flex-1 text-left">
+                                <p className="text-[12px] font-black uppercase tracking-widest">
+                                    Sign Out
+                                </p>
+                                <p className={`text-[10px] font-medium opacity-60 ${isLight ? 'text-rose-500' : 'text-rose-300'}`}>
+                                    End current session
+                                </p>
+                            </div>
+                            <ChevronRight className={`h-3.5 w-3.5 opacity-40 transition-transform group-hover:translate-x-0.5 ${isLight ? 'text-rose-400' : 'text-rose-500'}`} />
+                        </button>
+                    </form>
+                </div>
             </aside>
 
             {/* Main Content Area */}
