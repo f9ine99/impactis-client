@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import {
+    Building2,
     LayoutDashboard,
     MapPin,
     Settings2,
@@ -259,7 +260,7 @@ export default async function WorkspaceProfilePage() {
                                 />
                                 <SidebarNavLink
                                     href="/workspace/profile"
-                                    label="Identity Hub"
+                                    label="Profile"
                                     icon={UserRound}
                                     active
                                     activeClassName={navActiveClass}
@@ -267,6 +268,13 @@ export default async function WorkspaceProfilePage() {
                                 />
                                 <SidebarNavLink
                                     href="/workspace/settings"
+                                    label="Organization"
+                                    icon={Building2}
+                                    activeClassName={navActiveClass}
+                                    idleClassName={navIdleClass}
+                                />
+                                <SidebarNavLink
+                                    href="/workspace/preferences"
                                     label="Settings"
                                     icon={Settings2}
                                     activeClassName={navActiveClass}

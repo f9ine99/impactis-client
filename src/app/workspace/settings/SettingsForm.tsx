@@ -120,7 +120,7 @@ export default function SettingsForm(props: SettingsFormProps) {
             <div className="flex items-center justify-between px-2">
                 <div className="flex flex-col gap-1">
                     <h2 className={`text-sm font-black uppercase tracking-widest ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                        Settings Hub
+                        Organization Hub
                     </h2>
                     <p className={`text-[10px] font-bold ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                         {isEditMode ? 'You are currently editing organization properties.' : 'Viewing organization properties in read-only mode.'}

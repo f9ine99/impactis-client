@@ -6,6 +6,7 @@ import {
     PanelLeft,
     LayoutDashboard,
     UserRound,
+    Building2,
     Settings2,
     LifeBuoy,
     LogOut
@@ -102,6 +103,7 @@ export default function WorkspaceLayoutShell({
         router.prefetch('/workspace')
         router.prefetch('/workspace/profile')
         router.prefetch('/workspace/settings')
+        router.prefetch('/workspace/preferences')
     }, [router])
 
     return (
@@ -168,7 +170,7 @@ export default function WorkspaceLayoutShell({
                                 <div className="space-y-1">
                                     <SidebarNavLink
                                         href="/workspace/profile"
-                                        label="Account"
+                                        label="Profile"
                                         icon={UserRound}
                                         collapsed={isCollapsed}
                                         activeClassName={navActiveClass}
@@ -176,6 +178,14 @@ export default function WorkspaceLayoutShell({
                                     />
                                     <SidebarNavLink
                                         href="/workspace/settings"
+                                        label="Organization"
+                                        icon={Building2}
+                                        collapsed={isCollapsed}
+                                        activeClassName={navActiveClass}
+                                        idleClassName={navIdleClass}
+                                    />
+                                    <SidebarNavLink
+                                        href="/workspace/preferences"
                                         label="Settings"
                                         icon={Settings2}
                                         collapsed={isCollapsed}
