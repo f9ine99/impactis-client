@@ -8,6 +8,7 @@ import {
     type BillingInterval,
     createStripeCheckoutSessionForCurrentUser,
     createStripePortalSessionForCurrentUser,
+    updateBillingSubscriptionForCurrentUser,
 } from '@/modules/billing'
 import {
     getPrimaryOrganizationMembershipForUser,
@@ -189,6 +190,31 @@ function normalizeBillingInterval(value: FormDataEntryValue | null): BillingInte
     }
 
     return null
+}
+
+function parseBooleanEnv(value: string | undefined, fallback: boolean): boolean {
+    if (typeof value !== 'string') {
+        return fallback
+    }
+
+    const normalized = value.trim().toLowerCase()
+    if (normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on') {
+        return true
+    }
+
+    if (normalized === '0' || normalized === 'false' || normalized === 'no' || normalized === 'off') {
+        return false
+    }
+
+    return fallback
+}
+
+function isStripeBillingRedirectEnabled(): boolean {
+    return parseBooleanEnv(
+        process.env.BILLING_STRIPE_REDIRECTS_ENABLED
+            ?? process.env.NEXT_PUBLIC_BILLING_STRIPE_REDIRECTS_ENABLED,
+        true
+    )
 }
 
 function isNextRedirectError(error: unknown): boolean {
@@ -1028,6 +1054,34 @@ export async function updateBillingSubscriptionSectionAction(
             return { error: 'Select a plan before updating subscription.', success: null }
         }
 
+        const stripeRedirectEnabled = isStripeBillingRedirectEnabled()
+        if (!stripeRedirectEnabled) {
+            const mutation = await updateBillingSubscriptionForCurrentUser(supabase, {
+                planCode,
+                billingInterval,
+            })
+
+            if (!mutation.success) {
+                const normalizedMessage = mutation.message?.toLowerCase() ?? ''
+                const requiresStripeCheckout = normalizedMessage.includes('paid plans require stripe checkout')
+                return {
+                    error: requiresStripeCheckout
+                        ? 'Paid plan checkout is currently disabled until Stripe-hosted billing is enabled.'
+                        : (mutation.message ?? 'Unable to update billing subscription right now.'),
+                    success: null,
+                }
+            }
+
+            revalidatePath('/workspace')
+            revalidatePath('/workspace/settings')
+            revalidateTag(WORKSPACE_IDENTITY_CACHE_TAG, 'max')
+
+            return {
+                error: null,
+                success: mutation.message ?? 'Billing subscription updated.',
+            }
+        }
+
         const baseUrl = resolveInviteBaseUrl()
         const checkout = await createStripeCheckoutSessionForCurrentUser(supabase, {
             planCode,
@@ -1100,6 +1154,13 @@ export async function openBillingPortalSectionAction(
         const { supabase, membership } = await requireBillingEditorSettingsContext()
         telemetryContext.orgType = membership.organization.type
         telemetryContext.memberRole = membership.member_role
+
+        if (!isStripeBillingRedirectEnabled()) {
+            return {
+                error: 'Stripe billing portal is disabled in this environment.',
+                success: null,
+            }
+        }
 
         const baseUrl = resolveInviteBaseUrl()
         const portal = await createStripePortalSessionForCurrentUser(supabase, {
