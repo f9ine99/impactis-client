@@ -85,6 +85,32 @@ function resolveSingleSearchParam(value: string | string[] | undefined): string 
     return null
 }
 
+function resolveStripeCheckoutStatus(value: string | string[] | undefined): 'success' | 'cancel' | null {
+    const normalized = resolveSingleSearchParam(value)?.toLowerCase()
+    if (normalized === 'success' || normalized === 'cancel') {
+        return normalized
+    }
+
+    return null
+}
+
+function parseBooleanEnv(value: string | undefined, fallback: boolean): boolean {
+    if (typeof value !== 'string') {
+        return fallback
+    }
+
+    const normalized = value.trim().toLowerCase()
+    if (normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on') {
+        return true
+    }
+
+    if (normalized === '0' || normalized === 'false' || normalized === 'no' || normalized === 'off') {
+        return false
+    }
+
+    return fallback
+}
+
 function getVerificationMeta(status: OrganizationVerificationStatus): {
     label: string
     variant: BadgeProps['variant']
@@ -323,7 +349,7 @@ function CurrentPlanSidebarCard(input: {
 export default async function WorkspaceSettingsPage({
     searchParams,
 }: {
-    searchParams: Promise<{ section?: string | string[] }>
+    searchParams: Promise<{ section?: string | string[]; stripe?: string | string[] }>
 }) {
     const supabase = await createClient()
     const {
@@ -336,6 +362,7 @@ export default async function WorkspaceSettingsPage({
 
     const resolvedSearchParams = await searchParams
     const requestedSection = resolveSingleSearchParam(resolvedSearchParams.section)
+    const stripeCheckoutStatus = resolveStripeCheckoutStatus(resolvedSearchParams.stripe)
     const requestedSectionForSnapshot = requestedSection ?? 'settings-identity'
 
     const {
@@ -474,6 +501,13 @@ export default async function WorkspaceSettingsPage({
         : []
 
     const verificationMeta = getVerificationMeta(verificationStatus)
+    const billingStripeRedirectEnabled = parseBooleanEnv(
+        process.env.BILLING_STRIPE_REDIRECTS_ENABLED
+            ?? process.env.NEXT_PUBLIC_BILLING_STRIPE_REDIRECTS_ENABLED,
+        true
+    )
+    const billingSiteUrlConfigured = Boolean(process.env.NEXT_PUBLIC_SITE_URL?.trim())
+    const billingApiBaseUrlConfigured = Boolean(process.env.NEXT_PUBLIC_IMPACTIS_API_URL?.trim())
     const hasReadinessData = Boolean(startupReadiness)
     const readinessScore = startupReadiness?.readiness_score ?? null
     const readinessScoreForBar = readinessScore ?? 0
@@ -759,6 +793,10 @@ export default async function WorkspaceSettingsPage({
                                 plans={billingPlans}
                                 currentPlan={currentPlan}
                                 canManage={canManageBilling}
+                                billingStripeRedirectEnabled={billingStripeRedirectEnabled}
+                                billingSiteUrlConfigured={billingSiteUrlConfigured}
+                                billingApiBaseUrlConfigured={billingApiBaseUrlConfigured}
+                                stripeCheckoutStatus={stripeCheckoutStatus}
                                 isLight={isLight}
                             />
                         ) : null}
