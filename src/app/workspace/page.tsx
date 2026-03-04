@@ -808,19 +808,6 @@ export default async function WorkspacePage() {
                                 </>
                             )}
 
-                            {membership.organization.type === 'advisor' && (
-                                <AdvisorInboxPanel
-                                    incomingRequests={engagementRequests.filter((request) => request.advisor_org_id === membership.org_id)}
-                                    verificationStatus={verificationStatus}
-                                    proposalFeatureGate={advisorProposalFeatureGate}
-                                    cardClassName={`${panelClass} border-none shadow-none rounded-[3rem] p-8`}
-                                    mutedCardClassName={mutedPanelClass}
-                                    textMainClassName={textMainClass}
-                                    textMutedClassName={textMutedClass}
-                                    tableRowClassName={tableRowClass}
-                                />
-                            )}
-
                             {membership.organization.type === 'investor' && (
                                 <div className="relative">
                                     <div className="mb-6 flex items-center justify-between">
