@@ -1,8 +1,4 @@
 import type {
-    AdvisorDirectoryEntry,
-    EngagementRequest,
-} from '@/modules/engagements'
-import type {
     OrganizationMembership,
     OrganizationMemberDirectoryEntry,
     OrganizationOutgoingInvite,
@@ -20,8 +16,6 @@ import type { UserProfile } from '@/modules/profiles'
 export type WorkspaceSnapshot = {
     verification_status: OrganizationVerificationStatus
     current_plan: BillingCurrentPlanSnapshot | null
-    engagement_requests: EngagementRequest[]
-    advisor_directory: AdvisorDirectoryEntry[]
     startup_readiness: StartupReadiness | null
 }
 

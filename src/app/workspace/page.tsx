@@ -30,10 +30,6 @@ import { Badge, type BadgeProps } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import {
-    type EngagementRequest,
-    type EngagementRequestStatus,
-} from '@/modules/engagements'
 import { getOnboardingPath } from '@/modules/onboarding'
 import {
     evaluateOrganizationCapability,
@@ -61,9 +57,6 @@ import StartupDiscoveryFeedPanel from './StartupDiscoveryFeedPanel'
 import WorkspaceThemeToggle from './WorkspaceThemeToggle'
 import WorkspaceUserMenu from './WorkspaceUserMenu'
 import WorkspaceLayoutShell from './WorkspaceLayoutShell'
-import {
-    respondEngagementRequestAction,
-} from './actions'
 
 type StatusMeta = {
     label: string
@@ -126,46 +119,6 @@ function getCapabilityMeta(result: OrganizationCapabilityGateResult): StatusMeta
     }
 
     return { label: 'Blocked', variant: 'destructive' }
-}
-
-function getEngagementStatusMeta(status: EngagementRequestStatus): StatusMeta {
-    if (status === 'accepted') {
-        return { label: 'Accepted', variant: 'success' }
-    }
-
-    if (status === 'rejected') {
-        return { label: 'Rejected', variant: 'destructive' }
-    }
-
-    if (status === 'sent') {
-        return { label: 'Pending', variant: 'warning' }
-    }
-
-    if (status === 'cancelled') {
-        return { label: 'Cancelled', variant: 'secondary' }
-    }
-
-    return { label: 'Expired', variant: 'secondary' }
-}
-
-function getEngagementStatusHint(status: EngagementRequestStatus): string {
-    if (status === 'sent') {
-        return 'Waiting for advisor response'
-    }
-
-    if (status === 'accepted') {
-        return 'Advisor accepted and moved to prep'
-    }
-
-    if (status === 'rejected') {
-        return 'Advisor declined this request'
-    }
-
-    if (status === 'cancelled') {
-        return 'Cancelled by your startup team'
-    }
-
-    return 'Request expired without a response'
 }
 
 function getMemberRoleBadgeVariant(role: OrganizationMemberRole): BadgeProps['variant'] {
@@ -418,111 +371,6 @@ function SidebarNavLink(input: {
     )
 }
 
-function AdvisorInboxPanel(input: {
-    incomingRequests: EngagementRequest[]
-    verificationStatus: OrganizationVerificationStatus
-    proposalFeatureGate: BillingMeteredFeatureGateResult | null
-    cardClassName: string
-    mutedCardClassName: string
-    textMainClassName: string
-    textMutedClassName: string
-    tableRowClassName: string
-}) {
-    const proposalGateBlocked = input.proposalFeatureGate ? !input.proposalFeatureGate.allowed : false
-    const proposalUsageLabel = input.proposalFeatureGate
-        ? input.proposalFeatureGate.unlimited
-            ? 'Unlimited proposals'
-            : `${input.proposalFeatureGate.remaining ?? 0}/${input.proposalFeatureGate.limit ?? 0} proposals left`
-        : null
-    const canRespond = input.verificationStatus === 'approved' && !proposalGateBlocked
-
-    return (
-        <Card className={input.cardClassName}>
-            <CardHeader className="pb-3">
-                <CardTitle className={`text-lg ${input.textMainClassName}`}>Engagement Inbox</CardTitle>
-                <CardDescription className={`text-xs ${input.textMutedClassName}`}>
-                    Review and process startup requests.
-                </CardDescription>
-                {proposalUsageLabel ? (
-                    <p className={`text-[11px] font-medium ${proposalGateBlocked ? 'text-rose-500' : input.textMutedClassName}`}>
-                        {proposalGateBlocked ? input.proposalFeatureGate?.message : proposalUsageLabel}
-                    </p>
-                ) : null}
-            </CardHeader>
-            <CardContent className="pt-0">
-                {input.incomingRequests.length === 0 ? (
-                    <div className={`rounded-xl border border-dashed p-6 text-center text-sm font-medium ${input.textMutedClassName}`}>
-                        No incoming requests yet.
-                    </div>
-                ) : (
-                    <div className="overflow-hidden rounded-lg border border-slate-200/60 dark:border-slate-800/60">
-                        <div className="divide-y divide-slate-100 dark:divide-slate-800/50">
-                            {input.incomingRequests.map((request) => {
-                                const statusMeta = getEngagementStatusMeta(request.status)
-
-                                return (
-                                    <div key={request.id} className={`px-4 py-3 transition-colors ${input.tableRowClassName}`}>
-                                        <div className="flex items-center justify-between gap-4">
-                                            <div className="min-w-0">
-                                                <p className={`truncate text-sm font-semibold ${input.textMainClassName}`}>
-                                                    {request.startup_org_name}
-                                                </p>
-                                                <p className={`mt-0.5 text-[11px] ${input.textMutedClassName}`}>
-                                                    Received {formatDate(request.created_at)}
-                                                </p>
-                                            </div>
-                                            <div className="flex shrink-0 items-center gap-2">
-                                                <Badge variant={statusMeta.variant} className="h-5 px-1.5 text-[10px] font-bold uppercase tracking-tight">
-                                                    {statusMeta.label}
-                                                </Badge>
-                                            </div>
-                                        </div>
-
-                                        {request.status === 'sent' && (
-                                            <div className="mt-3">
-                                                {canRespond ? (
-                                                    <form action={respondEngagementRequestAction} className="flex items-center gap-2">
-                                                        <input type="hidden" name="requestId" value={request.id} />
-                                                        <Button type="submit" size="sm" name="decision" value="accepted" className="h-7 px-3 text-[11px] font-bold">
-                                                            Accept
-                                                        </Button>
-                                                        <Button type="submit" size="sm" variant="outline" name="decision" value="rejected" className="h-7 px-3 text-[11px]">
-                                                            Reject
-                                                        </Button>
-                                                    </form>
-                                                ) : proposalGateBlocked ? (
-                                                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-rose-500">
-                                                        <span>{input.proposalFeatureGate?.message}</span>
-                                                        <Link
-                                                            href="/workspace/settings?section=settings-billing"
-                                                            className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider"
-                                                        >
-                                                            Upgrade <ArrowRight className="h-3 w-3" />
-                                                        </Link>
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-[11px] font-medium text-amber-600 dark:text-amber-500/80">
-                                                        Account approval required to process requests.
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
-
-                                        {request.prep_room_id && (
-                                            <p className="mt-2.5 inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600">
-                                                <ArrowRight className="h-3.5 w-3.5" /> Prep room active
-                                            </p>
-                                        )}
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-    )
-}
 
 function InvestorReadinessCard(input: {
     score: number
@@ -743,75 +591,10 @@ function CoreTeamPanel(input: {
     )
 }
 
-function EngagementActivityTable(input: {
-    title: string
-    emptyMessage: string
-    requests: EngagementRequest[]
-    cardClassName: string
-    mutedCardClassName: string
-    textMainClassName: string
-    textMutedClassName: string
-    tableHeaderClassName: string
-    tableRowClassName: string
-}) {
-    return (
-        <Card className={input.cardClassName}>
-            <CardHeader className="pb-3">
-                <CardTitle className={`text-lg ${input.textMainClassName}`}>{input.title}</CardTitle>
-                <CardDescription className={`text-xs ${input.textMutedClassName}`}>
-                    Recent engagement events and outcomes for your organization.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-                {input.requests.length === 0 ? (
-                    <div className={`rounded-xl border border-dashed p-6 text-center text-sm font-medium ${input.textMutedClassName}`}>
-                        {input.emptyMessage}
-                    </div>
-                ) : (
-                    <div className="overflow-hidden rounded-lg border border-slate-200/60 dark:border-slate-800/60">
-                        <div className={`grid grid-cols-[1fr_auto_auto] items-center gap-4 border-b px-3 py-2 text-[10px] font-bold uppercase tracking-wider ${input.tableHeaderClassName}`}>
-                            <p>Request</p>
-                            <p className="px-2 text-center">Status</p>
-                            <p className="w-24 text-right">Date</p>
-                        </div>
-                        <div className="divide-y divide-slate-100 dark:divide-slate-800/50 text-sm">
-                            {input.requests.map((request) => {
-                                const statusMeta = getEngagementStatusMeta(request.status)
-
-                                return (
-                                    <div key={request.id} className={`grid grid-cols-[1fr_auto_auto] items-center gap-4 px-3 py-3 transition-colors ${input.tableRowClassName}`}>
-                                        <div className="min-w-0">
-                                            <p className={`truncate font-semibold ${input.textMainClassName}`}>
-                                                {request.startup_org_name} <span className="mx-1 text-slate-400 font-normal">→</span> {request.advisor_org_name}
-                                            </p>
-                                            <p className={`mt-0.5 text-[10px] ${input.textMutedClassName}`}>
-                                                {getEngagementStatusHint(request.status)}
-                                            </p>
-                                            {request.prep_room_id ? (
-                                                <p className="mt-0.5 text-[10px] font-semibold text-emerald-500">Prep room active</p>
-                                            ) : null}
-                                        </div>
-                                        <div className="px-2">
-                                            <Badge variant={statusMeta.variant} className="h-5 px-1.5 text-[10px] font-bold uppercase tracking-tight">
-                                                {statusMeta.label}
-                                            </Badge>
-                                        </div>
-                                        <div className={`w-24 text-right ${input.textMutedClassName}`}>
-                                            <p className="text-[11px] font-medium">{formatDate(request.created_at)}</p>
-                                            {request.responded_at ? (
-                                                <p className="text-[10px]">Updated {formatDate(request.responded_at)}</p>
-                                            ) : null}
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-    )
-}
+// NOTE: EngagementActivityTable and advisor inbox components were removed
+// because engagement requests depend on backend `/engagements` APIs that
+// do not exist yet. When that API surface is implemented, add new
+// dashboard components here.
 
 export default async function WorkspacePage() {
     const supabase = await createClient()
@@ -882,7 +665,6 @@ export default async function WorkspacePage() {
         ? (consultantRequestFeatureGate.unlimited ? null : consultantRequestFeatureGate.remaining ?? 0)
         : 0
 
-    const engagementRequests: EngagementRequest[] = []
     const startupDiscoveryFeed: StartupDiscoveryFeedItem[] = bootstrapSnapshot.startup_discovery_feed ?? []
 
     const verificationMeta = getVerificationMeta(verificationStatus)
