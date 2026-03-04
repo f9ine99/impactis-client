@@ -53,8 +53,8 @@ export default function Hero() {
                     </span>
                 </h1>
 
-                <p className="mt-8 text-xl md:text-2xl text-gray-600/80 max-w-2xl mx-auto leading-relaxed font-semibold tracking-tight animate-fade-up [animation-delay:200ms]">
-                    Secure your seat in the premium ecosystem for <span className="text-gray-900">visionary founders</span> and <span className="text-gray-900 font-bold">institutional-grade capital</span>.
+                <p className="mt-8 text-xl md:text-2xl text-gray-600/80 max-w-3xl mx-auto leading-relaxed font-semibold tracking-tight animate-fade-up [animation-delay:200ms]">
+                    Impactis runs your startup through an <span className="text-gray-900">institutional-grade readiness engine</span>, assembles a clean <span className="text-gray-900 font-bold">data room investors can trust</span>, and only then routes you into curated capital conversations.
                 </p>
 
                 <div className="mt-12 flex flex-col sm:flex-row items-center justify-center space-y-5 sm:space-y-0 sm:space-x-8 animate-fade-up [animation-delay:300ms]">
@@ -96,11 +96,13 @@ export default function Hero() {
                                     <div className="w-16 h-16 bg-[#0B3D2E]/5 rounded-[2rem] flex items-center justify-center mb-8 group-hover:bg-[#0B3D2E] group-hover:text-white transition-all duration-500 shadow-sm border border-[#0B3D2E]/10">
                                         <TrendingUp className="w-8 h-8" />
                                     </div>
-                                    <p className="text-[10px] text-[#0B3D2E]/40 font-black uppercase tracking-[0.4em]">Asset Liquidity</p>
-                                    <p className="text-7xl font-black text-gray-900 mt-4 tracking-tight group-hover:scale-[1.03] transition-transform duration-500">$14.2M</p>
+                                    <p className="text-[10px] text-[#0B3D2E]/40 font-black uppercase tracking-[0.4em]">Readiness Engine</p>
+                                    <p className="text-7xl font-black text-gray-900 mt-4 tracking-tight group-hover:scale-[1.03] transition-transform duration-500">76%</p>
                                     <div className="mt-8 flex items-center px-6 py-3 bg-[#0B3D2E]/5 rounded-2xl w-fit border border-[#0B3D2E]/10">
-                                        <span className="text-[#0B3D2E] font-black text-xs">↑ 24.5%</span>
-                                        <span className="text-[9px] text-[#0B3D2E]/40 font-black ml-3 tracking-widest uppercase">Live Delta</span>
+                                        <span className="text-[#0B3D2E] font-black text-xs">Profile score</span>
+                                        <span className="text-[9px] text-[#0B3D2E]/40 font-black ml-3 tracking-widest uppercase">
+                                            Computed from docs & signals
+                                        </span>
                                     </div>
                                 </div>
 
@@ -108,8 +110,8 @@ export default function Hero() {
                                     <div className="w-16 h-16 bg-[#10B981]/5 rounded-[2rem] flex items-center justify-center mb-8 group-hover:bg-[#0B3D2E] group-hover:text-white transition-all duration-500 shadow-sm border border-[#10B981]/10">
                                         <Rocket className="w-8 h-8" />
                                     </div>
-                                    <p className="text-[10px] text-[#0B3D2E]/40 font-black uppercase tracking-[0.4em]">Verified Nodes</p>
-                                    <p className="text-7xl font-black text-gray-900 mt-4 tracking-tight group-hover:scale-[1.03] transition-transform duration-500">1.2K</p>
+                                    <p className="text-[10px] text-[#0B3D2E]/40 font-black uppercase tracking-[0.4em]">Investor Network</p>
+                                    <p className="text-7xl font-black text-gray-900 mt-4 tracking-tight group-hover:scale-[1.03] transition-transform duration-500">220</p>
                                     <div className="flex -space-x-4 mt-8">
                                         {verifiedNodePlaceholders.map((node) => (
                                             <div key={node.id} className="relative w-14 h-14 rounded-full border-[6px] border-white/80 bg-gray-100 overflow-hidden shadow-xl backdrop-blur-md">

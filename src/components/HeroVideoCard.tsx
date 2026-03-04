@@ -1,7 +1,4 @@
 export default function HeroVideoCard() {
-    const videoId = 'D7lLkTQaueQ'
-    const videoSrc = `https://www.youtube.com/embed/${videoId}?si=zIcwKKetX-R4dhwm&autoplay=1&mute=1&controls=1&modestbranding=1&rel=0&loop=1&playlist=${videoId}`
-
     return (
         <div className="w-full max-w-4xl mx-auto h-[450px] mb-8 px-4 relative group perspective-1000">
             {/* Horizontal Emit Glow — full width beam */}
@@ -12,14 +9,18 @@ export default function HeroVideoCard() {
 
             {/* The Video Container with 3D flip-in entrance */}
             <div className="relative w-full h-full bg-gray-950 rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden border-8 border-white transition-transform duration-700 group-hover:scale-[1.02] animate-hero-entrance">
-                <iframe
-                    className="w-full h-full scale-[1.01]"
-                    src={videoSrc}
-                    title="Impactis Platform Overview"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen
-                ></iframe>
+                <video
+                    className="w-full h-full object-cover scale-[1.01]"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    controls={false}
+                    poster="/placeholders/hero-video-poster.jpg"
+                >
+                    <source src="/videos/hero-placeholder.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
 
                 {/* Subtle Texture Layer */}
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] pointer-events-none"></div>
