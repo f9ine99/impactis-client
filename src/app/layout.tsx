@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Impactis | Premium Fintech Platform",
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className="antialiased text-gray-900">
         {children}
         <Toaster position="top-right" richColors />
+        {process.env.NODE_ENV === "production" && <SpeedInsights />}
       </body>
     </html>
   );
