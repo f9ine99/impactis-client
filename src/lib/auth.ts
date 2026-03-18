@@ -7,10 +7,7 @@ import { emailOTP } from "better-auth/plugins";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-});
-
-pool.on("connect", (client) => {
-  client.query("SET search_path TO public");
+  options: "-c search_path=public",
 });
 
 export const auth = betterAuth({

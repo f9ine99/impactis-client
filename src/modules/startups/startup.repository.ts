@@ -97,6 +97,7 @@ type StartupDataRoomDocumentRow = {
     id: string
     startup_org_id: string
     document_type: string
+    folder_path: string | null
     title: string
     file_url: string
     storage_bucket: string | null
@@ -365,6 +366,7 @@ function mapStartupDataRoomDocument(row: StartupDataRoomDocumentRow): StartupDat
         id,
         startup_org_id: startupOrgId,
         document_type: documentType,
+        folder_path: normalizeText(row.folder_path),
         title,
         file_url: fileUrl,
         storage_bucket: normalizeText(row.storage_bucket),
@@ -674,6 +676,7 @@ export async function upsertStartupDataRoomDocumentForCurrentUser(
     supabase: SupabaseClient,
     input: {
         documentType: StartupDataRoomDocumentType
+        folderPath?: string | null
         title: string
         fileUrl?: string | null
         storageBucket?: string | null
@@ -713,6 +716,7 @@ export async function upsertStartupDataRoomDocumentForCurrentUser(
         accessToken,
         body: {
             documentType,
+            folderPath: normalizeText(input.folderPath),
             title,
             fileUrl,
             storageBucket,

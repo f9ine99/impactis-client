@@ -5,6 +5,7 @@ import { getOnboardingPath } from '@/modules/onboarding'
 import { getWorkspaceIdentityForUser } from '@/modules/workspace'
 import { getWorkspaceSettingsSnapshotForCurrentUser } from '@/modules/workspace/workspace.repository'
 import DataRoomSection from '../settings/DataRoomSection'
+import DataRoomAccessClient from './DataRoomAccessClient'
 
 export default async function WorkspaceDataRoomPage() {
     const session = await auth.api.getSession({
@@ -31,6 +32,7 @@ export default async function WorkspaceDataRoomPage() {
         userId: user.id,
     })
     const snapshotAny = settingsSnapshot as any
+    const orgType = membership.organization.type
 
     const canEdit = membership.member_role === 'owner'
     const mutedPanelClass = isLight
@@ -46,21 +48,27 @@ export default async function WorkspaceDataRoomPage() {
         <main className="mx-auto w-full max-w-6xl px-4 py-10">
             <h1 className={`text-2xl font-black ${textMainClass}`}>Data Room</h1>
             <p className={`mt-2 text-sm font-semibold ${textMutedClass}`}>
-                Upload and manage documents for investors.
+                {orgType === 'startup'
+                    ? 'Upload and manage documents for investors.'
+                    : 'Request access to startup data rooms and review documents securely.'}
             </p>
             <div className="mt-8">
-                <DataRoomSection
-                    canEdit={canEdit}
-                    isLight={isLight}
-                    panelClass={panelClass}
-                    mutedPanelClass={mutedPanelClass}
-                    labelClass={labelClass}
-                    textMainClass={textMainClass}
-                    textMutedClass={textMutedClass}
-                    titleMutedClass={titleMutedClass}
-                    featureGate={snapshotAny?.data_room_feature_gate ?? null}
-                    documents={snapshotAny?.startup_data_room_documents ?? []}
-                />
+                {orgType === 'startup' ? (
+                    <DataRoomSection
+                        canEdit={canEdit}
+                        isLight={isLight}
+                        panelClass={panelClass}
+                        mutedPanelClass={mutedPanelClass}
+                        labelClass={labelClass}
+                        textMainClass={textMainClass}
+                        textMutedClass={textMutedClass}
+                        titleMutedClass={titleMutedClass}
+                        featureGate={snapshotAny?.data_room_feature_gate ?? null}
+                        documents={snapshotAny?.startup_data_room_documents ?? []}
+                    />
+                ) : (
+                    <DataRoomAccessClient />
+                )}
             </div>
         </main>
     )

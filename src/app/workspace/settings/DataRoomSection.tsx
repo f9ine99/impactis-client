@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ActionFeedback } from '@/components/ui/action-feedback'
 import type { BillingMeteredFeatureGateResult } from '@/modules/billing'
 import type { StartupDataRoomDocument, StartupDataRoomDocumentType } from '@/modules/startups'
+import StartupDataRoomInboxClient from '../data-room/StartupDataRoomInboxClient'
 import {
     deleteStartupDataRoomDocumentSectionAction,
     upsertStartupDataRoomDocumentSectionAction,
@@ -152,7 +153,10 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
     const uploadDisabled = !input.canEdit || isUploadPending || gateBlocked
 
     return (
-        <div className="divide-y divide-slate-200/5">
+        <div className="space-y-8">
+            <StartupDataRoomInboxClient />
+
+            <div className="divide-y divide-slate-200/5">
             {/* Statistics Row */}
             <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 first:pt-0">
                 <div className="md:col-span-1">
@@ -280,6 +284,16 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                                 </div>
                             </div>
                             <div>
+                                <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Folder (Optional)</label>
+                                <input
+                                    name="dataRoomFolderPath"
+                                    defaultValue=""
+                                    disabled={uploadDisabled}
+                                    placeholder="e.g. Legal/2026"
+                                    className={`w-full rounded-xl border px-3 py-2.5 text-sm outline-none shadow-sm transition-all focus:border-emerald-500/50 ${input.isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-950 text-slate-100'}`}
+                                />
+                            </div>
+                            <div>
                                 <label className={`mb-1.5 block text-[10px] font-black uppercase tracking-widest ${input.titleMutedClass}`}>Context or Summary (Optional)</label>
                                 <textarea
                                     name="dataRoomDocumentSummary"
@@ -362,6 +376,17 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                                                 </Badge>
                                             </div>
                                             <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                                                {document.folder_path ? (
+                                                    <>
+                                                        <Badge
+                                                            variant="secondary"
+                                                            className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-widest"
+                                                        >
+                                                            {document.folder_path}
+                                                        </Badge>
+                                                        <span className="text-slate-400">•</span>
+                                                    </>
+                                                ) : null}
                                                 <a
                                                     href={document.file_url}
                                                     target="_blank"
@@ -447,6 +472,7 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                     <ActionFeedback tone="success" title="Document removed" message={deleteState.success} isLight={input.isLight} />
                 </div>
             ) : null}
+            </div>
         </div>
     )
 }

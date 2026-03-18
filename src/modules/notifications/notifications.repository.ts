@@ -56,3 +56,34 @@ export async function markNotificationRead(notificationId: string): Promise<bool
     })
     return data?.success === true
 }
+
+export async function markAllNotificationsRead(): Promise<number> {
+    const token = await getAccessToken()
+    if (!token) return 0
+    const data = await apiRequest<{ success: boolean; count: number }>({
+        path: '/notifications/read-all',
+        method: 'PATCH',
+        accessToken: token,
+    })
+    return data?.success === true && typeof data.count === 'number' ? data.count : 0
+}
+
+export type NotificationPreferencesInput = {
+    in_app_enabled?: boolean
+    email_enabled?: boolean
+    telegram_enabled?: boolean
+    telegram_chat_id?: string | null
+    type_overrides?: unknown
+}
+
+export async function updateNotificationPreferences(input: NotificationPreferencesInput): Promise<boolean> {
+    const token = await getAccessToken()
+    if (!token) return false
+    const data = await apiRequest<{ success: boolean } | { error: string }>({
+        path: '/notifications/preferences',
+        method: 'PATCH',
+        accessToken: token,
+        body: input,
+    })
+    return !!data && typeof data === 'object' && 'success' in data && (data as any).success === true
+}

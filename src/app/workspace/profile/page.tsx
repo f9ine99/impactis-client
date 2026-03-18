@@ -213,7 +213,7 @@ export default async function WorkspaceProfilePage() {
     const navActiveClass = 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-300'
     const navIdleClass = 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-800 border-transparent dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100'
 
-    const initialIdentity = { profile, membership }
+    const initialIdentity = { profile, membership, onboarding_progress: onboarding_progress ?? null, onboarding_details: onboarding_details ?? null }
 
     return (
         <WorkspaceIdentityHydration initialData={initialIdentity}>
@@ -286,7 +286,6 @@ export default async function WorkspaceProfilePage() {
                                 defaultLinkedinUrl={profile.linkedin_url ?? ''}
                                 defaultTimezoneName={profile.timezone_name ?? ''}
                                 defaultPreferredContactMethod={profile.preferred_contact_method ?? ''}
-                                isLight={isLight}
                             />
                         </div>
 

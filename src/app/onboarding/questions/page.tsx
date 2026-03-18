@@ -4,8 +4,22 @@ import { Pool } from 'pg'
 import { auth } from '@/lib/auth'
 import { getDashboardPathForRole, getPostAuthRedirectPath } from '@/modules/auth'
 import { getOnboardingPath } from '@/modules/onboarding'
-import { hasOrganizationMembershipForUser } from '@/modules/organizations'
+import { hasOrganizationMembershipForUser, mapAppRoleToOrganizationType, type OrganizationType } from '@/modules/organizations'
 import { OnboardingEntryClient } from '../OnboardingEntryClient'
+
+function normalizeText(value: unknown): string {
+    if (typeof value !== 'string') return ''
+    const t = String(value).trim()
+    return t.length > 0 ? t : ''
+}
+
+function normalizeTextArray(value: unknown): string[] {
+    if (!Array.isArray(value)) return []
+    return value
+        .filter((item): item is string => typeof item === 'string')
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0)
+}
 
 function getPool(): Pool {
     const databaseUrl = process.env.DATABASE_URL
@@ -57,7 +71,7 @@ async function getOnboardingDetailsFromDb(userId: string, role: string): Promise
 }
 
 export default async function OnboardingQuestionsPage(props: {
-    searchParams?: Promise<{ view?: string }> | { view?: string }
+    searchParams?: Promise<{ view?: string }>
 }) {
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -70,18 +84,15 @@ export default async function OnboardingQuestionsPage(props: {
     const user = session.user as any
     const metadata = (user?.user_metadata ?? {}) as Record<string, unknown>
 
-    // Require org membership first (authoritative check).
     const hasMembership = await hasOrganizationMembershipForUser(null as any, user, {
         failOpenOnRequestError: false,
     })
+
     if (!hasMembership) {
-        redirect(getOnboardingPath())
+        redirect('/workspace-setup')
     }
 
-    const rawParams = props.searchParams ?? {}
-    const searchParams = typeof (rawParams as Promise<unknown>).then === 'function'
-        ? await (rawParams as Promise<{ view?: string }>)
-        : (rawParams as { view?: string })
+    const searchParams = (props.searchParams ? await props.searchParams : {}) as { view?: string }
     const isViewMode = searchParams?.view === '1'
 
     const questionnaire = (metadata.onboarding_questionnaire ?? null) as

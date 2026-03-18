@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
-import { Pool } from 'pg'
 import { auth } from '@/lib/auth'
+import { resolveApiBaseUrl } from '@/lib/api/rest-client'
+import { getBetterAuthToken } from '@/lib/better-auth-token'
 
 type SaveOnboardingPayload = {
     role: string
@@ -10,18 +11,6 @@ type SaveOnboardingPayload = {
     values: Record<string, unknown>
     completed?: boolean
     skipped?: boolean
-}
-
-function getPool(): Pool {
-    const databaseUrl = process.env.DATABASE_URL
-    if (!databaseUrl) {
-        throw new Error('DATABASE_URL is not configured')
-    }
-    const pool = new Pool({ connectionString: databaseUrl })
-    pool.on('connect', (client) => {
-        client.query('SET search_path TO public')
-    })
-    return pool
 }
 
 export async function POST(request: Request) {
@@ -92,54 +81,34 @@ export async function POST(request: Request) {
             },
         }
 
-        const pool = getPool()
-        try {
-            await pool.query(
-                `update public.users set raw_user_meta_data = $1::jsonb, updated_at = timezone('utc', now()) where id = $2::uuid`,
-                [JSON.stringify(nextMeta), user.id]
-            )
-            const orgType = roleKey === 'startup' ? 'startup' : roleKey === 'investor' ? 'investor' : 'advisor'
-            const completedStages = onboardingCompleted ? totalSteps : Math.min(totalSteps, Math.max(0, stepIndex + 1))
-            try {
-                await pool.query(
-                    `
-                    insert into public.user_onboarding_progress (user_id, organization_type, total_stages, completed_stages, is_completed, completed_at, updated_at)
-                    values ($1::uuid, $2::text, $3::smallint, $4::smallint, $5::boolean, $6::timestamptz, timezone('utc', now()))
-                    on conflict (user_id, organization_type) do update set
-                      total_stages = excluded.total_stages,
-                      completed_stages = excluded.completed_stages,
-                      is_completed = excluded.is_completed,
-                      completed_at = excluded.completed_at,
-                      updated_at = timezone('utc', now())
-                    `,
-                    [
-                        user.id,
-                        orgType,
-                        totalSteps,
-                        completedStages,
-                        onboardingCompleted,
-                        onboardingCompleted ? new Date().toISOString() : null,
-                    ]
-                )
-            } catch {
-                // Table may not exist yet; metadata save already succeeded
-            }
-            try {
-                await pool.query(
-                    `
-                    insert into public.user_onboarding_details (user_id, organization_type, details, updated_at)
-                    values ($1::uuid, $2::text, $3::jsonb, timezone('utc', now()))
-                    on conflict (user_id, organization_type) do update set
-                      details = excluded.details,
-                      updated_at = timezone('utc', now())
-                    `,
-                    [user.id, orgType, JSON.stringify(nextRoleData)]
-                )
-            } catch {
-                // Table may not exist yet
-            }
-        } finally {
-            await pool.end()
+        // Compatibility proxy: store progress in the NestJS onboarding module (authoritative).
+        // We keep nextMeta computed here to avoid breaking older pages that still read it.
+        // New flows should call /api/v1/onboarding/* directly.
+        const token = await getBetterAuthToken()
+        if (!token) {
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+        }
+        const apiBaseUrl = resolveApiBaseUrl(process.env.NEXT_PUBLIC_IMPACTIS_API_URL)
+        if (!apiBaseUrl) {
+            return NextResponse.json({ message: 'API URL not configured' }, { status: 502 })
+        }
+        const url = `${apiBaseUrl}/onboarding/progress`
+        const progressRes = await fetch(url, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+                stepKey: 'wizard',
+                stepNumber: Math.max(1, stepIndex + 1),
+                status: onboardingCompleted ? 'completed' : 'in_progress',
+            }),
+            cache: 'no-store',
+        })
+        if (!progressRes.ok) {
+            const text = await progressRes.text()
+            return NextResponse.json({ message: text || `API returned ${progressRes.status}` }, { status: progressRes.status })
         }
 
         return NextResponse.json({
@@ -147,6 +116,7 @@ export async function POST(request: Request) {
             onboardingCompleted,
             onboardingSkipped: skipped,
             onboardingStep: stepIndex,
+            legacyMetaPreview: nextMeta,
         })
     } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to save onboarding data right now.'

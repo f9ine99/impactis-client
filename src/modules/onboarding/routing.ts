@@ -1,8 +1,7 @@
-export const ONBOARDING_PATH = '/onboarding'
 export const ONBOARDING_QUESTIONS_PATH = '/onboarding/questions'
 
 export function getOnboardingPath(): string {
-    return ONBOARDING_PATH
+    return ONBOARDING_QUESTIONS_PATH
 }
 
 export function getOnboardingQuestionsPath(): string {
@@ -10,5 +9,5 @@ export function getOnboardingQuestionsPath(): string {
 }
 
 export function isOnboardingPath(pathname: string): boolean {
-    return pathname === ONBOARDING_PATH || pathname.startsWith(`${ONBOARDING_PATH}/`)
+    return pathname.startsWith('/onboarding')
 }

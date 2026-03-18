@@ -34,6 +34,7 @@ export default function OnboardingDataEditor({ role, initialValues }: Props) {
         const res = await save({
             role,
             stepIndex: 999,
+            totalSteps: 6,
             values,
             completed: true,
             skipped: false,

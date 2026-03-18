@@ -29,6 +29,7 @@ const PATH_TITLES: Record<string, string> = {
     '/workspace/notifications': 'Notifications',
     '/workspace/discovery': 'Discovery',
     '/workspace/connections': 'Deal Room',
+    '/workspace/admin': 'Admin',
 }
 
 function getPageTitle(pathname: string): string {

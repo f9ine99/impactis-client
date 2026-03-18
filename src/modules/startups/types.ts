@@ -144,6 +144,7 @@ export type StartupDataRoomDocument = {
     id: string
     startup_org_id: string
     document_type: StartupDataRoomDocumentType
+    folder_path: string | null
     title: string
     file_url: string
     storage_bucket: string | null

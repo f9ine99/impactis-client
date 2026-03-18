@@ -4,7 +4,7 @@ import { auth } from '@/lib/auth'
 import { getOnboardingPath } from '@/modules/onboarding'
 import { getWorkspaceBootstrapForCurrentUser } from '@/modules/workspace'
 import { hasOrganizationMembershipForUser } from '@/modules/organizations'
-import DiscoveryFeedPanel from './DiscoveryFeedPanel'
+import DiscoveryPageClient from './DiscoveryPageClient'
 
 export default async function DiscoveryPage() {
     const session = await auth.api.getSession({
@@ -26,16 +26,15 @@ export default async function DiscoveryPage() {
         )
     }
 
-    const discoveryFeed = bootstrapSnapshot.discovery_feed ?? []
     const viewerOrgType = membership.organization?.type ?? 'startup'
     const viewerOrgId = membership.organization?.id ?? ''
 
     return (
         <div className="flex flex-1 flex-col overflow-auto p-6">
-            <DiscoveryFeedPanel
-                feed={discoveryFeed}
+            <DiscoveryPageClient
                 viewerOrgId={viewerOrgId}
                 viewerOrgType={viewerOrgType as 'startup' | 'investor' | 'advisor'}
+                initialFeed={bootstrapSnapshot.discovery_feed ?? []}
             />
         </div>
     )

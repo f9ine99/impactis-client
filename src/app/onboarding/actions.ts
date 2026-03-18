@@ -103,7 +103,12 @@ export async function createDefaultOrganizationAndRedirect(companyNameFromDb?: s
     }
 
     const meta = (user.user_metadata ?? {}) as Record<string, unknown>
-    const role = (typeof meta.role === 'string' ? meta.role : meta.intended_org_type) ?? 'startup'
+    const role =
+        typeof meta.role === 'string'
+            ? meta.role
+            : typeof meta.intended_org_type === 'string'
+                ? meta.intended_org_type
+                : 'startup'
     const type = normalizeOrganizationType(role) ?? 'startup'
     const onboardingData = meta.onboardingData && typeof meta.onboardingData === 'object' ? (meta.onboardingData as Record<string, unknown>) : {}
     const roleData = onboardingData[role] && typeof onboardingData[role] === 'object' ? (onboardingData[role] as Record<string, unknown>) : {}

@@ -590,6 +590,8 @@ export async function getWorkspaceIdentityForUser(
     if (!accessToken) {
         return {
             profile: getEmptyProfileFallback(user.id),
+            onboarding_progress: null,
+            onboarding_details: null,
             membership: null,
         }
     }

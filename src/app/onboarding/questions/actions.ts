@@ -2,8 +2,9 @@
 
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { Pool } from 'pg'
 import { auth } from '@/lib/auth'
+import { apiRequest } from '@/lib/api/rest-client'
+import { getBetterAuthToken } from '@/lib/better-auth-token'
 import { getPostAuthRedirectPath } from '@/modules/auth'
 
 type QuestionnaireState = {
@@ -18,18 +19,6 @@ function normalizeJson(value: string | null): Record<string, unknown> {
     } catch {
         return {}
     }
-}
-
-function getPool(): Pool {
-    const databaseUrl = process.env.DATABASE_URL
-    if (!databaseUrl) {
-        throw new Error('DATABASE_URL is not configured')
-    }
-    const pool = new Pool({ connectionString: databaseUrl })
-    pool.on('connect', (client) => {
-        client.query('SET search_path TO public')
-    })
-    return pool
 }
 
 export async function saveOnboardingQuestionnaireAction(
@@ -55,58 +44,36 @@ export async function saveOnboardingQuestionnaireAction(
     const skipped = skippedRaw === 'true'
 
     const meta = (user.user_metadata ?? {}) as Record<string, unknown>
-    const role = (meta.role ?? meta.intended_org_type ?? null) as string | null
-
-    const existingOnboardingData =
-        meta.onboardingData && typeof meta.onboardingData === 'object' && meta.onboardingData !== null
-            ? (meta.onboardingData as Record<string, unknown>)
-            : {}
-
-    const roleKey = typeof role === 'string' && role.trim().length > 0 ? role : 'unknown'
-    const existingRoleData =
-        existingOnboardingData[roleKey] && typeof existingOnboardingData[roleKey] === 'object'
-            ? (existingOnboardingData[roleKey] as Record<string, unknown>)
-            : {}
-
-    const nextOnboardingData = {
-        ...existingOnboardingData,
-        [roleKey]: {
-            ...existingRoleData,
-            questionnaire: answers,
-            score: Number.isFinite(score) ? Math.round(score) : 0,
-            updated_at: new Date().toISOString(),
-        },
-    }
-
-    const onboardingCompleted = completed || skipped
-    const nextMeta = {
-        ...meta,
-        onboardingRole: role,
-        onboardingCompleted,
-        onboardingSkipped: skipped,
-        onboardingStep: onboardingCompleted ? 2 : 1,
-        onboardingData: nextOnboardingData,
-        onboarding_questionnaire: {
-            role,
-            completed,
-            skipped,
-            score: Number.isFinite(score) ? Math.round(score) : 0,
-            updated_at: new Date().toISOString(),
-            answers,
-        },
-    }
-
-    const pool = getPool()
     try {
-        await pool.query(
-            `update public.users set raw_user_meta_data = $1::jsonb, updated_at = timezone('utc', now()) where id = $2::uuid`,
-            [JSON.stringify(nextMeta), user.id]
-        )
+        const roleRaw = (meta.role ?? meta.intended_org_type ?? null) as string | null
+        const role =
+            roleRaw === 'startup' || roleRaw === 'investor' || roleRaw === 'advisor'
+                ? roleRaw
+                : 'startup'
+
+        const token = await getBetterAuthToken()
+        if (!token) {
+            return { error: 'Your session has expired. Please log in again.' }
+        }
+
+        const res = await apiRequest<{ success: boolean; error?: string }>({
+            path: '/v1/onboarding/answers',
+            method: 'PUT',
+            accessToken: token,
+            body: {
+                role,
+                answers,
+                completed,
+                skipped,
+                score: Number.isFinite(score) ? Math.round(score) : 0,
+            },
+        })
+        if (!res?.success) {
+            return { error: res?.error ?? 'Unable to save onboarding answers right now.' }
+        }
     } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to save onboarding answers right now.'
         return { error: message }
-    } finally {
-        await pool.end()
     }
 
     if (completed || skipped) {

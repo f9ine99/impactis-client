@@ -33,6 +33,7 @@ import {
 } from 'lucide-react'
 import { apiRequest } from '@/lib/api/rest-client'
 import { authClient } from '@/lib/auth-client'
+import { getBetterAuthTokenClient } from '@/lib/better-auth-token-client'
 
 type ActiveSessionItem = {
     id: string
@@ -42,6 +43,29 @@ type ActiveSessionItem = {
     created_at: string
     updated_at: string
     token?: string | null
+}
+
+type SecurityDevice = {
+    id: string
+    device_name: string | null
+    device_type: string | null
+    user_agent: string | null
+    ip_address: string | null
+    country: string | null
+    is_trusted: boolean
+    last_seen_at: string | null
+    revoked_at: string | null
+}
+
+type SecurityEvent = {
+    id: string
+    event_type: string
+    ip_address: string | null
+    user_agent: string | null
+    country: string | null
+    city: string | null
+    created_at: string
+    metadata: unknown
 }
 
 type SecuritySectionProps = {
@@ -258,6 +282,10 @@ export default function SecuritySection({
     const [liveSessions, setLiveSessions] = useState(initialSessions)
     const [revokingId, setRevokingId] = useState<string | null>(null)
     const [isRevokingAll, setIsRevokingAll] = useState(false)
+    const [devices, setDevices] = useState<SecurityDevice[]>([])
+    const [events, setEvents] = useState<SecurityEvent[]>([])
+    const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
+    const [twoFactorBusy, setTwoFactorBusy] = useState(false)
 
     const form = useForm<ChangePasswordFormValues>({
         resolver: zodResolver(changePasswordSchema),
@@ -318,6 +346,88 @@ export default function SecuritySection({
             cancelled = true
         }
     }, [])
+
+    async function refreshSecurityData() {
+        const token = await getBetterAuthTokenClient()
+        if (!token) return
+        const [deviceRows, eventRows] = await Promise.all([
+            apiRequest<SecurityDevice[]>({ path: '/security/devices', method: 'GET', accessToken: token }),
+            apiRequest<SecurityEvent[]>({ path: '/security/events?limit=30', method: 'GET', accessToken: token }),
+        ])
+        setDevices(Array.isArray(deviceRows) ? deviceRows : [])
+        setEvents(Array.isArray(eventRows) ? eventRows : [])
+    }
+
+    useEffect(() => {
+        refreshSecurityData().catch(() => {})
+    }, [])
+
+    async function revokeDevice(deviceId: string) {
+        const token = await getBetterAuthTokenClient()
+        if (!token) return
+        setRevokingId(deviceId)
+        try {
+            const res = await apiRequest<{ success: boolean } | { error: string }>({
+                path: `/security/devices/${encodeURIComponent(deviceId)}/revoke`,
+                method: 'POST',
+                accessToken: token,
+            })
+            if (!res || (typeof res === 'object' && 'error' in res)) {
+                toast.error('Failed to revoke device')
+                return
+            }
+            toast.success('Device revoked')
+            await refreshSecurityData()
+        } finally {
+            setRevokingId(null)
+        }
+    }
+
+    async function enable2fa(method: 'email' | 'totp' | 'sms') {
+        const token = await getBetterAuthTokenClient()
+        if (!token) return
+        setTwoFactorBusy(true)
+        try {
+            const res = await apiRequest<any>({
+                path: '/auth/2fa/enable',
+                method: 'POST',
+                accessToken: token,
+                body: { method },
+            })
+            if (!res || res.success !== true) {
+                toast.error('Failed to enable 2FA', { description: res?.error ?? res?.message })
+                return
+            }
+            setTwoFactorEnabled(true)
+            toast.success('2FA enabled')
+            await refreshSecurityData()
+        } finally {
+            setTwoFactorBusy(false)
+        }
+    }
+
+    async function disable2fa() {
+        const token = await getBetterAuthTokenClient()
+        if (!token) return
+        setTwoFactorBusy(true)
+        try {
+            const res = await apiRequest<any>({
+                path: '/auth/2fa/disable',
+                method: 'POST',
+                accessToken: token,
+                body: {},
+            })
+            if (!res || res.success !== true) {
+                toast.error('Failed to disable 2FA', { description: res?.error ?? res?.message })
+                return
+            }
+            setTwoFactorEnabled(false)
+            toast.success('2FA disabled')
+            await refreshSecurityData()
+        } finally {
+            setTwoFactorBusy(false)
+        }
+    }
 
     async function onPasswordSubmit(values: ChangePasswordFormValues) {
         if (strength.score <= 1) {
@@ -749,6 +859,74 @@ export default function SecuritySection({
                 </div>
             </SectionCard>
 
+            {/* ── Devices & Activity ─────────────────────────────── */}
+            <SectionCard
+                icon={Globe}
+                iconBgClass="bg-emerald-500/10"
+                iconColorClass="text-emerald-500"
+                title="Devices & Login Activity"
+                description="Devices seen recently and security events from the platform."
+                badge={{ label: 'Live', variant: 'success' }}
+                isLight={isLight}
+            >
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between gap-3">
+                        <p className={`text-[10px] font-black uppercase tracking-widest ${textMutedClass}`}>Devices</p>
+                        <Button type="button" size="sm" variant="outline" className="rounded-xl" onClick={() => refreshSecurityData()}>
+                            Refresh
+                        </Button>
+                    </div>
+                    <div className="grid gap-3">
+                        {devices.length === 0 ? (
+                            <p className={`text-sm ${textMutedClass}`}>No devices recorded yet.</p>
+                        ) : devices.slice(0, 8).map((d) => {
+                            const parsed = parseUserAgent(d.user_agent)
+                            return (
+                                <div key={d.id} className={`flex items-center justify-between gap-4 rounded-2xl border p-4 ${mutedCardClass}`}>
+                                    <div className="min-w-0">
+                                        <p className={`text-sm font-bold ${textMainClass}`}>{parsed.label}</p>
+                                        <p className={`mt-0.5 text-[11px] ${textMutedClass}`}>
+                                            {d.ip_address ?? 'Unknown IP'} {d.country ? `· ${d.country}` : ''} {d.last_seen_at ? `· last seen ${getRelativeTime(new Date(d.last_seen_at))}` : ''}
+                                        </p>
+                                        {d.revoked_at ? (
+                                            <p className="mt-1 text-[11px] font-semibold text-rose-500">Revoked</p>
+                                        ) : null}
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="outline"
+                                        disabled={!!d.revoked_at || revokingId === d.id}
+                                        onClick={() => revokeDevice(d.id)}
+                                        className="rounded-xl"
+                                    >
+                                        {revokingId === d.id ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Revoke'}
+                                    </Button>
+                                </div>
+                            )
+                        })}
+                    </div>
+
+                    <div>
+                        <p className={`text-[10px] font-black uppercase tracking-widest ${textMutedClass}`}>Recent events</p>
+                        <div className="mt-3 grid gap-2">
+                            {events.length === 0 ? (
+                                <p className={`text-sm ${textMutedClass}`}>No security events yet.</p>
+                            ) : events.slice(0, 10).map((e) => (
+                                <div key={e.id} className={`flex items-start justify-between gap-4 rounded-2xl border p-4 ${mutedCardClass}`}>
+                                    <div className="min-w-0">
+                                        <p className={`text-sm font-bold ${textMainClass}`}>{e.event_type}</p>
+                                        <p className={`mt-0.5 text-[11px] ${textMutedClass}`}>
+                                            {e.ip_address ?? 'Unknown IP'} {e.country ? `· ${e.country}` : ''} {e.created_at ? `· ${getRelativeTime(new Date(e.created_at))}` : ''}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </SectionCard>
+
             {/* ── Two-Factor Authentication ────────────────────── */}
             <SectionCard
                 icon={Fingerprint}
@@ -756,7 +934,7 @@ export default function SecuritySection({
                 iconColorClass="text-violet-500"
                 title="Two-Factor Authentication"
                 description="Add an extra layer of protection beyond your password."
-                badge={{ label: 'Not Enabled', variant: 'warning' }}
+                badge={{ label: twoFactorEnabled ? 'Enabled' : 'Not Enabled', variant: twoFactorEnabled ? 'success' : 'warning' }}
                 isLight={isLight}
             >
                 <div className="space-y-6">
@@ -794,14 +972,15 @@ export default function SecuritySection({
                                 </div>
                             </div>
                             <Button
-                                disabled
+                                disabled={twoFactorBusy}
                                 variant="outline"
                                 className={`rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-widest ${isLight
                                     ? 'border-slate-200 bg-slate-50 text-slate-400'
                                     : 'border-slate-700 bg-slate-800/50 text-slate-500'
                                     }`}
+                                onClick={() => (twoFactorEnabled ? disable2fa() : enable2fa('totp'))}
                             >
-                                Coming Soon
+                                {twoFactorEnabled ? 'Disable' : 'Enable'}
                             </Button>
                         </div>
 
@@ -819,14 +998,15 @@ export default function SecuritySection({
                                 </div>
                             </div>
                             <Button
-                                disabled
+                                disabled={twoFactorBusy}
                                 variant="outline"
                                 className={`rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-widest ${isLight
                                     ? 'border-slate-200 bg-slate-50 text-slate-400'
                                     : 'border-slate-700 bg-slate-800/50 text-slate-500'
                                     }`}
+                                onClick={() => (twoFactorEnabled ? disable2fa() : enable2fa('email'))}
                             >
-                                Coming Soon
+                                {twoFactorEnabled ? 'Disable' : 'Enable'}
                             </Button>
                         </div>
                     </div>

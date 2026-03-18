@@ -12,7 +12,7 @@ const PUBLIC_PATHS = new Set([
 
 const AUTH_ENTRY_PATHS = new Set(['/auth/login', '/auth/signup'])
 const WORKSPACE_PATH = '/workspace'
-const ONBOARDING_PATH = '/onboarding'
+const ONBOARDING_QUESTIONS_PATH = '/onboarding/questions'
 
 export function isPublicPath(pathname: string): boolean {
     return PUBLIC_PATHS.has(pathname) || pathname.startsWith('/_next')
@@ -45,7 +45,7 @@ export function sanitizeNextPath(nextPathParam: string | null | undefined): stri
 const LANDING_PATH = '/'
 
 export function getPostAuthRedirectPath(hasOrganizationMembership: boolean, options?: { skipCache?: boolean }): string {
-    if (!hasOrganizationMembership) return ONBOARDING_PATH
+    if (!hasOrganizationMembership) return ONBOARDING_QUESTIONS_PATH
     return LANDING_PATH
 }
 

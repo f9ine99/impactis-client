@@ -54,7 +54,7 @@ export async function acceptOrganizationInviteAction(
     }
 
     revalidatePath('/workspace')
-    revalidatePath('/onboarding')
+    revalidatePath('/onboarding/questions')
     revalidatePath('/invite')
 
     return {

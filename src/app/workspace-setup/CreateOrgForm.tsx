@@ -4,12 +4,12 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { OrganizationType } from '@/modules/organizations'
-import { completeOnboardingAction, type OnboardingActionState } from './actions'
+import { completeOnboardingAction, type OnboardingActionState } from '@/app/onboarding/actions'
 import { onboardingSchema, type OnboardingFormValues } from '@/schemas/onboarding'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-type OnboardingFormProps = {
+type CreateOrgFormProps = {
     defaultOrganizationType: OrganizationType
     defaultOrganizationName: string
     defaultLocation: string
@@ -24,12 +24,12 @@ function toLabel(value: OrganizationType): string {
     return 'Advisor'
 }
 
-export default function OnboardingForm({
+export default function CreateOrgForm({
     defaultOrganizationType,
     defaultOrganizationName,
     defaultLocation,
     defaultIndustryTags,
-}: OnboardingFormProps) {
+}: CreateOrgFormProps) {
     const [isPending, setIsPending] = useState(false)
     const form = useForm<OnboardingFormValues>({
         resolver: zodResolver(onboardingSchema),
@@ -68,7 +68,7 @@ export default function OnboardingForm({
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
-                                Organization Type
+                                Organization type
                             </FormLabel>
                             <FormControl>
                                 <select
@@ -94,7 +94,7 @@ export default function OnboardingForm({
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
-                                Organization Name
+                                Organization name
                             </FormLabel>
                             <FormControl>
                                 <Input
@@ -132,7 +132,7 @@ export default function OnboardingForm({
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
-                                Industry Tags
+                                Industry tags
                             </FormLabel>
                             <FormControl>
                                 <Input
@@ -156,7 +156,7 @@ export default function OnboardingForm({
                     disabled={isPending}
                     className="inline-flex w-full items-center justify-center rounded-xl bg-[#0B3D2E] px-5 py-3 font-semibold text-white transition hover:bg-[#082a20] disabled:opacity-60"
                 >
-                    {isPending ? 'Creating workspace...' : 'Continue To Workspace'}
+                    {isPending ? 'Creating…' : 'Continue'}
                 </button>
             </form>
         </Form>

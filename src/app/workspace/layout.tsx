@@ -1,6 +1,8 @@
 import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
+import { apiRequest } from '@/lib/api/rest-client'
+import { getBetterAuthToken } from '@/lib/better-auth-token'
 import { getOnboardingPath, getOnboardingQuestionsPath } from '@/modules/onboarding'
 import { getWorkspaceIdentityForUser } from '@/modules/workspace'
 import WorkspaceHeader from './WorkspaceHeader'
@@ -42,6 +44,18 @@ export default async function WorkspaceLayout({
     const displayName = profile?.full_name?.trim() || org?.name || 'User'
     const organizationType = org?.type ?? 'startup'
 
+    const token = await getBetterAuthToken()
+    const onboardingMe = token
+        ? await apiRequest<{
+            onboarding?: { blocked?: boolean; missing?: string[] }
+            scores?: { overall_score?: number } | null
+        }>({
+            path: '/v1/onboarding/me',
+            method: 'GET',
+            accessToken: token,
+        })
+        : null
+
     return (
         <WorkspaceThemeProvider initialIsLight={isLight}>
             <WorkspaceLayoutShell
@@ -51,6 +65,7 @@ export default async function WorkspaceLayout({
                 organizationCoreTeam={[]}
                 verificationMeta={null}
                 workspaceLabel={workspaceLabel}
+                onboardingMe={onboardingMe}
                 header={
                     <WorkspaceHeader
                         workspaceLabel={workspaceLabel}

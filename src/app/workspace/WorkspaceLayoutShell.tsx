@@ -29,6 +29,8 @@ import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import SettingsSectionNavigator, { type SettingsSectionItem } from './settings/SettingsSectionNavigator'
+import { isPlatformAdminUser } from '@/modules/admin'
+import { Shield } from 'lucide-react'
 
 function getAcronym(value: string): string {
     const parts = value.trim().split(/\s+/).filter(Boolean)
@@ -130,6 +132,10 @@ type WorkspaceLayoutShellProps = {
     organizationCoreTeam: unknown
     verificationMeta: unknown
     workspaceLabel: string
+    onboardingMe?: {
+        onboarding?: { blocked?: boolean; missing?: string[] }
+        scores?: { overall_score?: number } | null
+    } | null
 }
 
 export default function WorkspaceLayoutShell({
@@ -141,6 +147,7 @@ export default function WorkspaceLayoutShell({
     organizationCoreTeam,
     verificationMeta,
     workspaceLabel,
+    onboardingMe,
 }: WorkspaceLayoutShellProps) {
     const router = useRouter()
     const pathname = usePathname() ?? ''
@@ -157,7 +164,15 @@ export default function WorkspaceLayoutShell({
     const navActiveClass = isLight ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm' : 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300 shadow-sm shadow-emerald-950/20'
     const navIdleClass = isLight ? 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-800' : 'text-slate-300 hover:bg-slate-800 hover:text-slate-100'
 
+    const readinessBlocked = onboardingMe?.onboarding?.blocked === true
+    const readinessMissing = Array.isArray(onboardingMe?.onboarding?.missing) ? onboardingMe!.onboarding!.missing! : []
+    const readinessScore =
+        typeof onboardingMe?.scores?.overall_score === 'number'
+            ? Math.max(0, Math.min(100, Math.round(onboardingMe.scores.overall_score)))
+            : null
+
     const orgType = (membership as { organization?: { type?: string } } | null)?.organization?.type as OrgType | undefined
+    const isAdmin = isPlatformAdminUser(profile as any)
     const isSettingsRoute = pathname.startsWith('/workspace/settings')
     const isPreferencesRoute = pathname.startsWith('/workspace/preferences')
     const isSubRoute = isSettingsRoute
@@ -196,8 +211,9 @@ export default function WorkspaceLayoutShell({
             },
             { href: '/workspace/preferences', label: 'Settings', icon: Settings2 },
             { href: '/workspace/help', label: 'Help & Support', icon: LifeBuoy },
+            ...(isAdmin ? [{ href: '/workspace/admin', label: 'Admin', icon: Shield }] : []),
         ],
-        []
+        [isAdmin]
     )
 
     const settingsSections: SettingsSectionItem[] = useMemo(() => {
@@ -524,6 +540,42 @@ export default function WorkspaceLayoutShell({
             {/* Dashboard Workspace */}
             <div className="relative flex flex-1 flex-col min-w-0 overflow-hidden pt-16 md:pt-0">
                 {header}
+                {readinessBlocked ? (
+                    <div className={cn('mx-4 mt-4 rounded-2xl border px-4 py-3 md:mx-6', panelClass)}>
+                        <div className="flex flex-col gap-1">
+                            <p className={cn('text-sm font-semibold', textMainClass)}>
+                                Complete onboarding to unlock the platform{readinessScore !== null ? ` (Score: ${readinessScore}%)` : ''}.
+                            </p>
+                            {readinessMissing.length > 0 ? (
+                                <p className={cn('text-xs', textMutedClass)}>
+                                    Missing: {readinessMissing.slice(0, 6).join(', ')}
+                                    {readinessMissing.length > 6 ? ` (+${readinessMissing.length - 6} more)` : ''}
+                                </p>
+                            ) : (
+                                <p className={cn('text-xs', textMutedClass)}>
+                                    Finish Step 1 and complete your profile (name, photo, bio) to continue.
+                                </p>
+                            )}
+                            <div className="mt-2 flex items-center gap-2">
+                                <Button
+                                    type="button"
+                                    onClick={() => router.push('/onboarding/questions')}
+                                    className="rounded-xl bg-emerald-600 text-white hover:bg-emerald-700"
+                                >
+                                    Continue onboarding
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => router.push('/workspace/profile')}
+                                    className={cn('rounded-xl', navIdleClass)}
+                                >
+                                    Update profile
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                ) : null}
                 {children}
             </div>
         </main>

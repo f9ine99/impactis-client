@@ -506,3 +506,4 @@ export async function createStripePortalSessionForCurrentUser(
         currentPlan: mapBillingCurrentPlan(payload.currentPlan),
     }
 }
+

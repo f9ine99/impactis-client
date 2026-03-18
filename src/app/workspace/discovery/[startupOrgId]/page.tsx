@@ -11,6 +11,7 @@ import {
     createConnectionRequest,
     listOutgoingConnectionRequests,
 } from '@/modules/connections/connections.repository'
+import { createDealRoomRequest } from '@/modules/deal-room/deal-room.repository'
 import type { StartupPublicDiscoveryProfile } from '@/modules/startups/types'
 import type { UnifiedDiscoveryCard } from '@/modules/workspace/types'
 
@@ -32,7 +33,7 @@ function getConnectionButtonConfig(
 export default function DiscoveryProfilePage() {
     const params = useParams()
     const searchParams = useSearchParams()
-    const orgId = typeof params?.startupOrgId === 'string' ? params.startupOrgId : ''
+    const orgId = typeof params?.startupOrgId === 'string' ? params.startupOrgId.trim() : ''
     const typeParam = searchParams?.get('type') ?? 'startup'
     const viewerTypeParam = searchParams?.get('viewerType') as ViewerOrgType | null
     const orgType = typeParam === 'investor' || typeParam === 'advisor' ? typeParam : 'startup'
@@ -41,7 +42,12 @@ export default function DiscoveryProfilePage() {
     const [cardProfile, setCardProfile] = useState<UnifiedDiscoveryCard | null>(null)
     const [loading, setLoading] = useState(true)
     const [connectState, setConnectState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+    const [dealState, setDealState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
     const [outgoingToThis, setOutgoingToThis] = useState(false)
+
+    const resolvedToOrgIdRaw =
+        (orgType === 'startup' ? startupProfile?.startup_org_id : cardProfile?.org_id) ?? orgId
+    const resolvedToOrgId = resolvedToOrgIdRaw?.trim() ?? ''
 
     useEffect(() => {
         if (!orgId) {
@@ -85,13 +91,13 @@ export default function DiscoveryProfilePage() {
     }, [orgId])
 
     const handleRequestConnect = useCallback(() => {
-        if (!orgId || connectState !== 'idle') return
+        if (!resolvedToOrgId || connectState !== 'idle') return
         setConnectState('sending')
-        createConnectionRequest({ toOrgId: orgId })
+        createConnectionRequest({ toOrgId: resolvedToOrgId })
             .then((result) => {
                 if ('error' in result) {
                     setConnectState('error')
-                    toast.error('Could not send request')
+                    toast.error(result.error || 'Could not send request')
                 } else {
                     setConnectState('sent')
                     setOutgoingToThis(true)
@@ -104,7 +110,28 @@ export default function DiscoveryProfilePage() {
                 setConnectState('error')
                 toast.error('Could not send request')
             })
-    }, [orgId, connectState])
+    }, [resolvedToOrgId, connectState])
+
+    const handleStartDealDiscussion = useCallback(() => {
+        if (!orgId || dealState !== 'idle') return
+        setDealState('sending')
+        createDealRoomRequest({ startupOrgId: orgId })
+            .then((result) => {
+                if (result && typeof result === 'object' && 'error' in result) {
+                    setDealState('error')
+                    toast.error(result.error || 'Could not start deal discussion')
+                } else {
+                    setDealState('sent')
+                    toast.success('Deal discussion requested', {
+                        description: 'The startup will be notified to accept or decline.',
+                    })
+                }
+            })
+            .catch(() => {
+                setDealState('error')
+                toast.error('Could not start deal discussion')
+            })
+    }, [orgId, dealState])
 
     const connectionButtonConfig = getConnectionButtonConfig(viewerTypeParam, orgType)
     const showConnectionButton = connectionButtonConfig?.show && !outgoingToThis && connectState !== 'sent'
@@ -244,6 +271,7 @@ export default function DiscoveryProfilePage() {
 
     const { post, profile: bio, data_room_documents } = startupProfile
     const startupConnectionConfig = getConnectionButtonConfig(viewerTypeParam, 'startup')
+    const canStartDealDiscussion = viewerTypeParam === 'investor'
 
     return (
         <div className="mx-auto max-w-4xl space-y-8 p-6">
@@ -367,8 +395,27 @@ export default function DiscoveryProfilePage() {
                         {startupConnectionConfig.label}
                     </Button>
                 ) : null}
+                {canStartDealDiscussion ? (
+                    <Button
+                        onClick={handleStartDealDiscussion}
+                        disabled={dealState === 'sending' || dealState === 'sent'}
+                        variant="outline"
+                        className="gap-2 rounded-xl"
+                        title="Start a Deal Room after the startup accepts"
+                    >
+                        {dealState === 'sending' ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Send className="h-4 w-4" />
+                        )}
+                        {dealState === 'sent' ? 'Deal requested' : 'Start Deal Discussion'}
+                    </Button>
+                ) : null}
                 {connectState === 'error' && (
                     <p className="text-sm text-rose-500">Could not send request. Try again.</p>
+                )}
+                {dealState === 'error' && (
+                    <p className="text-sm text-rose-500">Could not start deal discussion. Try again.</p>
                 )}
                 <Button variant="outline" asChild className="rounded-xl">
                     <Link href="/workspace/discovery">Back to Discovery</Link>

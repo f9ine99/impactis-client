@@ -906,6 +906,7 @@ export async function upsertStartupDataRoomDocumentSectionAction(
         }
 
         const documentType = normalizeStartupDataRoomDocumentType(formData.get('dataRoomDocumentType'))
+        const folderPath = normalizeText(formData.get('dataRoomFolderPath'))
         const title = normalizeText(formData.get('dataRoomDocumentTitle'))
         const summary = normalizeText(formData.get('dataRoomDocumentSummary'))
         const file = normalizeUploadedFile(formData.get('dataRoomDocumentFile'))
@@ -960,6 +961,7 @@ export async function upsertStartupDataRoomDocumentSectionAction(
             accessToken,
             body: {
                 documentType,
+                folderPath,
                 title,
                 summary,
                 fileUrl: publicUrl,

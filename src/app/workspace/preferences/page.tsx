@@ -1,12 +1,6 @@
 import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import {
-    Bell,
-    Palette,
-    Shield,
-    ShieldCheck,
-    Sparkles,
-} from 'lucide-react'
+import { Bell, Palette, Shield, Sparkles } from 'lucide-react'
 import { apiRequest } from '@/lib/api/rest-client'
 import { auth } from '@/lib/auth'
 import { getBetterAuthToken } from '@/lib/better-auth-token'
@@ -16,6 +10,7 @@ import { getWorkspaceIdentityForUser } from '@/modules/workspace'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import SecuritySection from './SecuritySection'
+import NotificationsSection from './NotificationsSection'
 
 type PreferencesSectionId = 'security' | 'notifications' | 'appearance'
 
@@ -206,29 +201,7 @@ export default async function PreferencesPage({
                         )}
 
                         {activeSectionId === 'notifications' && (
-                            <div className={`overflow-hidden rounded-[2rem] border p-12 text-center ${isLight ? 'border-slate-200 bg-white shadow-sm' : 'border-white/5 bg-slate-900/60'}`}>
-                                <div className="flex flex-col items-center gap-5">
-                                    <div className="relative">
-                                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500/10 ring-4 ring-blue-500/5">
-                                            <Bell className="h-8 w-8 text-blue-500" />
-                                        </div>
-                                        <div className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10">
-                                            <Sparkles className="h-3 w-3 text-blue-500" />
-                                        </div>
-                                    </div>
-                                    <div className="max-w-xs">
-                                        <p className={`text-sm font-black uppercase tracking-widest ${textMainClass}`}>
-                                            Notifications
-                                        </p>
-                                        <p className={`mt-2 text-[11px] font-medium leading-relaxed ${textMutedClass}`}>
-                                            Email digests, engagement alerts, and notification preferences will be available here.
-                                        </p>
-                                    </div>
-                                    <Badge variant="secondary" className="text-[10px] font-black uppercase tracking-widest">
-                                        Coming Soon
-                                    </Badge>
-                                </div>
-                            </div>
+                            <NotificationsSection isLight={isLight} />
                         )}
 
                         {activeSectionId === 'appearance' && (

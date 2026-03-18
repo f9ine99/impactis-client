@@ -23,6 +23,8 @@ import {
 } from 'lucide-react'
 import type { ComponentType } from 'react'
 import { auth } from '@/lib/auth'
+import { apiRequest } from '@/lib/api/rest-client'
+import { getBetterAuthToken } from '@/lib/better-auth-token'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge, type BadgeProps } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -623,16 +625,17 @@ export default async function WorkspacePage(props: WorkspacePageProps) {
     }
 
     const user = session.user
-    const metadata = (user as any)?.user_metadata as Record<string, unknown> | undefined
-    const role = (typeof metadata?.role === 'string' ? metadata.role : null) as string | null
-    const onboardingData =
-        metadata?.onboardingData && typeof metadata.onboardingData === 'object' && metadata.onboardingData !== null
-            ? (metadata.onboardingData as Record<string, any>)
-            : {}
-    const roleData = role ? onboardingData[role] : null
+    const token = await getBetterAuthToken()
+    const onboardingMe = token
+        ? await apiRequest<{ scores?: { overall_score?: number } | null }>({
+            path: '/v1/onboarding/me',
+            method: 'GET',
+            accessToken: token,
+        })
+        : null
     const onboardingScore =
-        typeof roleData?.score === 'number'
-            ? Math.max(0, Math.min(100, Math.round(roleData.score)))
+        typeof onboardingMe?.scores?.overall_score === 'number'
+            ? Math.max(0, Math.min(100, Math.round(onboardingMe.scores.overall_score)))
             : 0
     const headersList = await headers()
     const cookieHeader = headersList.get('cookie') ?? ''
