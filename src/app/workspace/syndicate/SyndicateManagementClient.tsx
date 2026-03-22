@@ -13,6 +13,7 @@ import {
     inviteToSyndicate,
     listMySyndicates,
     updateSyndicateStatus,
+    commitToSyndicate,
     type SyndicateInviteView,
     type SyndicateView,
 } from '@/modules/syndicates/syndicates.repository'
@@ -36,6 +37,7 @@ export default function SyndicateManagementClient({ organizations = [] }: { orga
     const [startupOrgId, setStartupOrgId] = useState('')
     const [inviteeOrgId, setInviteeOrgId] = useState('')
     const [inviteMessage, setInviteMessage] = useState('')
+    const [commitAmount, setCommitAmount] = useState('')
 
     const panelClass = isLight ? 'border-slate-200 bg-white shadow-sm ring-1 ring-slate-200/40' : 'border-white/10 bg-slate-900/80'
     const textMainClass = isLight ? 'text-slate-900' : 'text-slate-100'
@@ -119,6 +121,23 @@ export default function SyndicateManagementClient({ organizations = [] }: { orga
         setInviteMessage('')
         void loadDetail(expandedId)
     }, [expandedId, inviteeOrgId, inviteMessage, loadDetail])
+
+    const handleCommit = useCallback(async () => {
+        if (!expandedId) return
+        const amount = Number(commitAmount)
+        if (isNaN(amount) || amount <= 0) {
+            toast.error('Invalid amount')
+            return
+        }
+        const res = await commitToSyndicate(expandedId, amount)
+        if (res && 'error' in res) {
+            toast.error(res.error)
+            return
+        }
+        toast.success('Capital committed successfully')
+        setCommitAmount('')
+        void loadDetail(expandedId)
+    }, [expandedId, commitAmount, loadDetail])
 
     return (
         <div className="space-y-6">
@@ -228,7 +247,7 @@ export default function SyndicateManagementClient({ organizations = [] }: { orga
                                                         <ul className="mt-2 space-y-1 text-sm">
                                                             {members.map((m) => (
                                                                 <li key={m.id} className={textMainClass}>
-                                                                    {m.org_name} — {m.status}
+                                                                    {m.org_name} — {m.status} {m.committed_usd ? <span className="text-emerald-500 font-semibold ml-1">· ${Number(m.committed_usd).toLocaleString()} committed</span> : ''}
                                                                 </li>
                                                             ))}
                                                         </ul>
@@ -247,6 +266,19 @@ export default function SyndicateManagementClient({ organizations = [] }: { orga
                                                                 </li>
                                                             ))}
                                                         </ul>
+                                                    </div>
+                                                    <div>
+                                                        <p className={cn('text-xs font-black uppercase tracking-widest', textMutedClass)}>Your Financial Commitment</p>
+                                                        <div className="mt-2 flex items-center gap-2">
+                                                            <Input 
+                                                                type="number" 
+                                                                placeholder="Amount in USD" 
+                                                                value={commitAmount} 
+                                                                onChange={e => setCommitAmount(e.target.value)} 
+                                                                className="max-w-[200px]" 
+                                                            />
+                                                            <Button onClick={() => void handleCommit()} className="rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Commit Capital</Button>
+                                                        </div>
                                                     </div>
                                                     <div className="space-y-2">
                                                         <p className={cn('text-xs font-black uppercase tracking-widest', textMutedClass)}>Invite organization</p>

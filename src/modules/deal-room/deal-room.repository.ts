@@ -407,3 +407,22 @@ export async function inviteDealRoomParticipant(
     return (res.data as any) ?? { error: 'Failed to invite participant' }
 }
 
+export type DealRoomAiAnalysis = {
+    ai_summary: string | null
+    ai_risk_flags: string[] | null
+    analyzed_at: string | null
+}
+
+export async function analyzeDealRoom(
+    dealRoomId: string
+): Promise<DealRoomAiAnalysis | { error: string }> {
+    const token = await getAccessToken()
+    if (!token) return { error: 'Unauthorized' }
+    const res = await apiFetchJson<DealRoomAiAnalysis | { error: string }>({
+        path: `/deal-room/${encodeURIComponent(dealRoomId)}/ai-analyze`,
+        method: 'POST',
+        accessToken: token,
+    })
+    return (res.data as any) ?? { error: 'Failed to analyze' }
+}
+

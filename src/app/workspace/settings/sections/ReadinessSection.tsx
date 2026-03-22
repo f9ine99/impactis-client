@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { Sparkles, Loader2, ShieldAlert, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ActionFeedback } from '@/components/ui/action-feedback'
 import { toTitleCase } from '@/lib/utils'
+import { analyzeReadiness } from '@/modules/discovery/discovery.client'
 import type { SettingsSectionActionState } from '../actions'
 
 type ReadinessSectionProps = {
@@ -66,6 +68,21 @@ export function ReadinessSection({
     const [startupTractionSummary, setStartupTractionSummary] = useState(defaultStartupTractionSummary)
     const [startupFinancialSummary, setStartupFinancialSummary] = useState(defaultStartupFinancialSummary)
     const [startupLegalSummary, setStartupLegalSummary] = useState(defaultStartupLegalSummary)
+
+    const [analysis, setAnalysis] = useState<{ summary: string; riskFlags: string[] } | null>(null)
+    const [isAnalyzing, setIsAnalyzing] = useState(false)
+
+    async function handleAnalyze() {
+        setIsAnalyzing(true)
+        try {
+            const res = await analyzeReadiness()
+            setAnalysis(res)
+        } catch (error) {
+            console.error('Analysis failed', error)
+        } finally {
+            setIsAnalyzing(false)
+        }
+    }
 
     return (
         <div className={`rounded-3xl border p-6 ${mutedPanelClass} shadow-xl backdrop-blur-2xl`}>
@@ -346,6 +363,86 @@ export function ReadinessSection({
                                 )}
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* AI Analysis Row */}
+                <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 border-t border-slate-200/5">
+                    <div className="md:col-span-1">
+                        <div className="flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-emerald-500" />
+                            <label className={`block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
+                                AI Readiness Analysis
+                            </label>
+                        </div>
+                        <p className={`mt-1 text-sm font-medium leading-relaxed ${textMutedClass}`}>
+                            Get an instant VC-style evaluation of your current profile readiness.
+                        </p>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={isAnalyzing}
+                            onClick={handleAnalyze}
+                            className="mt-4 rounded-xl border-emerald-500/30 bg-emerald-500/5 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
+                        >
+                            {isAnalyzing ? (
+                                <>
+                                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                                    Analyzing Profile...
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles className="mr-2 h-3.5 w-3.5" />
+                                    Run AI Analysis
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                    <div className="md:col-span-2">
+                        {analysis ? (
+                            <div className={`rounded-2xl border p-5 ${isLight ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-950/40 border-slate-800 shadow-xl'}`}>
+                                <div className="mb-4 flex items-center gap-2">
+                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                                    <h4 className={`text-xs font-black uppercase tracking-widest ${labelClass}`}>Analysis Summary</h4>
+                                </div>
+                                <p className={`text-sm font-medium leading-relaxed mb-6 ${textMainClass}`}>
+                                    {analysis.summary}
+                                </p>
+
+                                {analysis.riskFlags.length > 0 ? (
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2">
+                                            <AlertTriangle className="h-4 w-4 text-amber-500" />
+                                            <h4 className={`text-[10px] font-black uppercase tracking-widest text-amber-600/90`}>Identified Risk Flags</h4>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {analysis.riskFlags.map((flag, i) => (
+                                                <div key={i} className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-1.5 text-[11px] font-bold text-amber-600/90">
+                                                    <ShieldAlert className="h-3 w-3" />
+                                                    {flag}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[11px] font-bold text-emerald-600/90">
+                                        <CheckCircle2 className="h-3 w-3" />
+                                        No critical risk flags identified in the provided data.
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className={`flex h-full min-h-[140px] items-center justify-center rounded-2xl border border-dashed text-center p-6 ${isLight ? 'border-slate-200 bg-slate-50/50' : 'border-slate-800 bg-slate-900/20'}`}>
+                                <div>
+                                    <Sparkles className={`mx-auto h-6 w-6 mb-2 opacity-20 ${textMainClass}`} />
+                                    <p className={`text-xs font-bold ${textMutedClass}`}>
+                                        Click "Run AI Analysis" to evaluate your profile.<br />
+                                        <span className="opacity-60">This uses your saved core strengths, market, and traction data.</span>
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

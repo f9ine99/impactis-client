@@ -1,9 +1,11 @@
 'use client'
 
-import { FileText, Rocket, UserPlus } from 'lucide-react'
+import { FileText, Rocket, UserPlus, Sparkles, Loader2 } from 'lucide-react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ActionFeedback } from '@/components/ui/action-feedback'
 import { TagEditor } from '../components/TagEditor'
+import { enhanceText } from '@/modules/discovery/discovery.client'
 import { STARTUP_DISCOVERY_TAG_SUGGESTIONS } from '../constants'
 import type { StartupPostStatus } from '@/modules/startups'
 import type { SettingsSectionActionState } from '../actions'
@@ -51,6 +53,22 @@ export function DiscoverySection({
     textMainClass,
     titleClass,
 }: DiscoverySectionProps) {
+    const [summary, setSummary] = useState(defaultStartupPostSummary)
+    const [isEnhancing, setIsEnhancing] = useState(false)
+
+    async function handleEnhance() {
+        if (!summary || summary.length < 10) return
+        setIsEnhancing(true)
+        try {
+            const enhanced = await enhanceText({ text: summary, context: 'startup discovery post executive summary' })
+            if (enhanced) {
+                setSummary(enhanced)
+            }
+        } finally {
+            setIsEnhancing(false)
+        }
+    }
+
     return (
         <div className={`rounded-3xl border p-6 ${mutedPanelClass} shadow-xl backdrop-blur-2xl`}>
             <div className="mb-8 flex items-center gap-3">
@@ -93,22 +111,45 @@ export function DiscoverySection({
                 </div>
 
                 {/* Executive Summary Row */}
-                <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
-                    <div className="md:col-span-1">
+                <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8 border-t border-slate-200/5 items-start">
+                    <div className="md:col-span-1 text-left">
                         <label htmlFor="startupPostSummary" className={`mb-1.5 block text-xs font-black uppercase tracking-[0.14em] ${labelClass}`}>
                             Executive Summary
                         </label>
                         <p className={`text-sm font-medium leading-relaxed ${textMutedClass}`}>
                             Briefly describe the problem, traction, and vision.
                         </p>
+                        {canEdit && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={isEnhancing || !summary || summary.length < 10}
+                                onClick={handleEnhance}
+                                className="mt-4 rounded-xl border-emerald-500/30 bg-emerald-500/5 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
+                            >
+                                {isEnhancing ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                                        Enhancing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles className="mr-2 h-3.5 w-3.5" />
+                                        AI Enhance
+                                    </>
+                                )}
+                            </Button>
+                        )}
                     </div>
                     <div className="md:col-span-2">
                         {canEdit ? (
                             <textarea
                                 id="startupPostSummary"
                                 name="startupPostSummary"
-                                defaultValue={defaultStartupPostSummary}
-                                disabled={isPending}
+                                value={summary}
+                                onChange={(e) => setSummary(e.target.value)}
+                                disabled={isPending || isEnhancing}
                                 rows={5}
                                 placeholder="Describe the problem you solve, your traction, and your vision."
                                 className={`w-full max-w-xl rounded-xl border px-4 py-3 text-sm outline-none transition-all disabled:cursor-not-allowed disabled:opacity-60 ${inputClass}`}

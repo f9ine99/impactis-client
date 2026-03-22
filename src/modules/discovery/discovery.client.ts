@@ -47,3 +47,26 @@ export async function sendAiMatchFeedback(input: { targetOrgId: string; feedback
     return !!res && typeof res === 'object' && res.success === true
 }
 
+export async function enhanceText(input: { text: string; context: string }): Promise<string | null> {
+    const accessToken = await token()
+    if (!accessToken) return null
+    const res = await apiRequest<{ enhancedText: string }>({
+        path: '/ai/enhance',
+        method: 'POST',
+        accessToken,
+        body: input,
+    })
+    return res?.enhancedText ?? null
+}
+
+export async function analyzeReadiness(): Promise<{ summary: string; riskFlags: string[] } | null> {
+    const accessToken = await token()
+    if (!accessToken) return null
+    const res = await apiRequest<{ summary: string; riskFlags: string[] }>({
+        path: '/ai/analyze-readiness',
+        method: 'GET',
+        accessToken,
+    })
+    return res ?? null
+}
+

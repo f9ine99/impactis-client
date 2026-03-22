@@ -3,9 +3,10 @@ import { redirect } from 'next/navigation'
 import { Pool } from 'pg'
 import { auth } from '@/lib/auth'
 import { getDashboardPathForRole, getPostAuthRedirectPath } from '@/modules/auth'
-import { getPrimaryOrganizationMembershipByUserId, mapAppRoleToOrganizationType, type OrganizationType } from '@/modules/organizations'
+import { getPrimaryOrganizationMembershipByUserId, hasOrganizationMembershipForUser, mapAppRoleToOrganizationType, type OrganizationType } from '@/modules/organizations'
 import { OnboardingEntryClient } from '../OnboardingEntryClient'
 import CreateOrgForm from '@/app/workspace-setup/CreateOrgForm'
+import { getWorkspacePath } from '@/modules/auth'
 
 function normalizeText(value: unknown): string {
     if (typeof value !== 'string') return ''
@@ -125,6 +126,15 @@ export default async function OnboardingQuestionsPage(props: {
         Object.keys(dbDetails).length > 0 ? { ...metadataRoleData, ...dbDetails } : metadataRoleData
 
     if (!membership) {
+        // If the API is down / returning errors, `getPrimaryOrganizationMembershipByUserId`
+        // returns null. Before showing CreateOrgForm (which would let the user create a
+        // duplicate org), double-check with the fail-open check. If the server is simply
+        // restarting, send them back to workspace so they land correctly once it's up.
+        const hasMembership = await hasOrganizationMembershipForUser(user, { failOpenOnRequestError: true })
+        if (hasMembership) {
+            redirect(getWorkspacePath())
+        }
+
         const metadataOrgType = metadata.intended_org_type ?? metadata.role
         const defaultOrganizationType = (mapAppRoleToOrganizationType(metadataOrgType ?? metadataRole) ?? 'startup') as OrganizationType
         const defaultOrganizationName = normalizeText(metadata.company)

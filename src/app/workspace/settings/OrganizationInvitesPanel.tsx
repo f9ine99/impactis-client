@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useTransientActionNotice } from '@/lib/use-transient-action-notice'
 import type { OrganizationOutgoingInvite } from '@/modules/organizations'
-import { Users } from 'lucide-react'
+import { Users, CheckCircle2, Link, Copy, Mail } from 'lucide-react'
 import {
     createOrganizationInviteAction,
     revokeOrganizationInviteAction,
@@ -161,24 +161,50 @@ export default function OrganizationInvitesPanel({
                                 </motion.div>
                             )}
 
-                            {notice.success && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    className="space-y-3 rounded-xl border border-emerald-200/50 bg-emerald-50/30 px-4 py-4 text-sm text-emerald-800 backdrop-blur-sm"
-                                >
-                                    <p className="font-bold">{notice.success}</p>
-                                    {state.inviteLink && (
-                                        <div className="space-y-1">
-                                            <p className="text-[11px] font-black uppercase tracking-widest text-emerald-700/70">Secure Invite Link</p>
-                                            <div className="flex items-center gap-2 rounded-lg border border-emerald-200/50 bg-white/80 px-3 py-2 font-mono text-xs text-emerald-900 shadow-sm">
-                                                <span className="truncate">{state.inviteLink}</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </motion.div>
-                            )}
+                             {notice.success && (
+                                 <motion.div
+                                     initial={{ opacity: 0, height: 0 }}
+                                     animate={{ opacity: 1, height: 'auto' }}
+                                     exit={{ opacity: 0, height: 0 }}
+                                     className="space-y-4 rounded-2xl border border-emerald-200/50 bg-emerald-50/30 p-5 text-emerald-800 backdrop-blur-md shadow-sm"
+                                 >
+                                     <div className="flex items-center gap-3">
+                                         <div className="rounded-full bg-emerald-500 p-1">
+                                             <CheckCircle2 className="h-4 w-4 text-white" />
+                                         </div>
+                                         <div>
+                                             <p className="text-sm font-black uppercase tracking-tight">{notice.success}</p>
+                                             <p className="text-[11px] font-bold text-emerald-600/80">The recipient has been notified via email and in-app notification.</p>
+                                         </div>
+                                     </div>
+
+                                     {state.inviteLink && (
+                                         <div className="mt-4 space-y-2 border-t border-emerald-200/30 pt-4">
+                                             <div className="flex items-center justify-between">
+                                                 <div className="flex items-center gap-2">
+                                                     <Link className="h-3.5 w-3.5 text-emerald-600" />
+                                                     <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700/70">Manual Share Link</p>
+                                                 </div>
+                                                 <Button
+                                                     type="button"
+                                                     variant="ghost"
+                                                     size="sm"
+                                                     onClick={() => {
+                                                         navigator.clipboard.writeText(state.inviteLink!)
+                                                     }}
+                                                     className="h-7 px-2 text-[9px] font-black uppercase tracking-widest text-emerald-600 hover:bg-emerald-500 hover:text-white"
+                                                 >
+                                                     <Copy className="mr-1.5 h-3 w-3" />
+                                                     Copy
+                                                 </Button>
+                                             </div>
+                                             <div className="flex items-center gap-2 rounded-xl border border-emerald-200/50 bg-white/60 px-3 py-2.5 font-mono text-[10px] text-emerald-900 shadow-inner">
+                                                 <span className="truncate opacity-60">{state.inviteLink}</span>
+                                             </div>
+                                         </div>
+                                     )}
+                                 </motion.div>
+                             )}
                         </div>
                     )}
                 </AnimatePresence>

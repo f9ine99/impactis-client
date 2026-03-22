@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useActionState, useEffect } from 'react'
+import { useActionState, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { ArrowUpRight, FolderLock, UploadCloud, Trash2 } from 'lucide-react'
+import { ArrowUpRight, BarChart3, FolderLock, Loader2, UploadCloud, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +11,10 @@ import { ActionFeedback } from '@/components/ui/action-feedback'
 import type { BillingMeteredFeatureGateResult } from '@/modules/billing'
 import type { StartupDataRoomDocument, StartupDataRoomDocumentType } from '@/modules/startups'
 import StartupDataRoomInboxClient from '../data-room/StartupDataRoomInboxClient'
+import {
+    getDataRoomAnalytics,
+    type DataRoomDocumentAnalyticRow,
+} from '@/modules/data-room/data-room.repository'
 import {
     deleteStartupDataRoomDocumentSectionAction,
     upsertStartupDataRoomDocumentSectionAction,
@@ -76,6 +80,7 @@ type DataRoomSectionProps = {
     textMainClass: string
     textMutedClass: string
     titleMutedClass: string
+    orgId?: string
 }
 
 export default function DataRoomSection(input: DataRoomSectionProps) {
@@ -87,6 +92,21 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
         deleteStartupDataRoomDocumentSectionAction,
         initialState
     )
+    const [analytics, setAnalytics] = useState<DataRoomDocumentAnalyticRow[]>([])
+    const [analyticsLoading, setAnalyticsLoading] = useState(false)
+
+    const loadAnalytics = useCallback(async () => {
+        if (!input.orgId) return
+        setAnalyticsLoading(true)
+        const res = await getDataRoomAnalytics(input.orgId)
+        setAnalyticsLoading(false)
+        if (res && 'error' in res) return
+        setAnalytics((res as any).documents ?? [])
+    }, [input.orgId])
+
+    useEffect(() => {
+        void loadAnalytics()
+    }, [loadAnalytics])
 
     useEffect(() => {
         if (!uploadState.success) {
@@ -458,6 +478,69 @@ export default function DataRoomSection(input: DataRoomSectionProps) {
                 </div>
             ) : null}
             </div>
+
+            {/* Analytics Row */}
+            {input.orgId && (
+                <div className="grid gap-4 py-8 md:grid-cols-3 md:gap-8">
+                    <div className="md:col-span-1">
+                        <div className="flex items-center gap-2 mb-1.5">
+                            <BarChart3 className={`h-4 w-4 ${input.isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
+                            <label className={`text-xs font-black uppercase tracking-[0.14em] ${input.labelClass}`}>Document Analytics</label>
+                        </div>
+                        <p className={`text-sm font-medium leading-relaxed ${input.textMutedClass}`}>
+                            Track how investors engage with your data room documents — views, unique viewers, and time spent.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => void loadAnalytics()}
+                            disabled={analyticsLoading}
+                            className={`mt-3 inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-[11px] font-black uppercase tracking-widest transition-colors ${input.isLight ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
+                        >
+                            {analyticsLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+                            Refresh
+                        </button>
+                    </div>
+                    <div className="md:col-span-2">
+                        {analyticsLoading ? (
+                            <div className="flex items-center gap-2 p-4">
+                                <Loader2 className={`h-5 w-5 animate-spin ${input.isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
+                                <span className={`text-sm ${input.textMutedClass}`}>Loading analytics...</span>
+                            </div>
+                        ) : analytics.length === 0 ? (
+                            <div className={`rounded-2xl border border-dashed px-5 py-6 text-center max-w-xl ${input.mutedPanelClass}`}>
+                                <p className={`text-sm font-bold ${input.textMutedClass}`}>No document views recorded yet.</p>
+                                <p className={`mt-1 text-[11px] ${input.textMutedClass}`}>Analytics will appear once investors start viewing your documents.</p>
+                            </div>
+                        ) : (
+                            <div className={`rounded-2xl border overflow-hidden max-w-2xl ${input.mutedPanelClass}`}>
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className={`border-b text-[10px] font-black uppercase tracking-widest ${input.isLight ? 'border-slate-200 bg-slate-50 text-slate-500' : 'border-white/10 bg-slate-900/50 text-slate-400'}`}>
+                                            <th className="px-4 py-3 text-left">Document</th>
+                                            <th className="px-4 py-3 text-right">Views</th>
+                                            <th className="px-4 py-3 text-right">Viewers</th>
+                                            <th className="px-4 py-3 text-right">Avg. Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-200/40 dark:divide-white/5">
+                                        {analytics.map((row) => (
+                                            <tr key={row.document_id} className={`text-xs ${input.isLight ? 'hover:bg-slate-50' : 'hover:bg-white/5'}`}>
+                                                <td className={`px-4 py-3 font-semibold ${input.textMainClass}`}>{row.document_title}</td>
+                                                <td className={`px-4 py-3 text-right tabular-nums font-bold ${input.textMainClass}`}>{row.total_views}</td>
+                                                <td className={`px-4 py-3 text-right tabular-nums font-bold text-emerald-600 dark:text-emerald-400`}>{row.unique_viewers}</td>
+                                                <td className={`px-4 py-3 text-right tabular-nums ${input.textMutedClass}`}>
+                                                    {row.total_views > 0 ? `${Math.round(row.total_seconds / row.total_views)}s` : '—'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
         </div>
     )
 }

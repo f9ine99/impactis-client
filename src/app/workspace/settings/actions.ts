@@ -20,7 +20,11 @@ import {
     type StartupDataRoomDocumentType,
     type StartupPostStatus,
 } from '@/modules/startups'
-import { WORKSPACE_IDENTITY_CACHE_TAG } from '@/modules/workspace'
+import {
+    WORKSPACE_IDENTITY_CACHE_TAG,
+    invalidateWorkspaceIdentityCache,
+    invalidateWorkspaceBootstrapCache,
+} from '@/modules/workspace'
 import { apiRequest } from '@/lib/api/rest-client'
 
 export type UpdateOrganizationSettingsActionState = {
@@ -695,6 +699,10 @@ export async function updateOrganizationIdentitySectionAction(
         revalidatePath('/workspace/settings')
         revalidateTag(WORKSPACE_IDENTITY_CACHE_TAG, 'max')
 
+        invalidateWorkspaceIdentityCache(userId)
+        invalidateWorkspaceBootstrapCache(userId)
+
+
         return { error: null, success: 'Organization identity updated.' }
     } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to update organization identity right now.'
@@ -724,7 +732,7 @@ export async function updateStartupReadinessSectionAction(
     }
 
     try {
-        const { membership } = await requireOwnerSettingsContext()
+        const { membership, userId } = await requireOwnerSettingsContext()
         telemetryContext.orgType = membership.organization.type
         telemetryContext.memberRole = membership.member_role
 
@@ -787,6 +795,9 @@ export async function updateStartupReadinessSectionAction(
         revalidatePath('/workspace/settings')
         revalidateTag(WORKSPACE_IDENTITY_CACHE_TAG, 'max')
 
+        invalidateWorkspaceIdentityCache(userId)
+        invalidateWorkspaceBootstrapCache(userId)
+
         return { error: null, success: 'Startup readiness profile updated.' }
     } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to update startup readiness right now.'
@@ -816,7 +827,7 @@ export async function updateStartupDiscoverySectionAction(
     }
 
     try {
-        const { membership } = await requireOwnerSettingsContext()
+        const { membership, userId } = await requireOwnerSettingsContext()
         telemetryContext.orgType = membership.organization.type
         telemetryContext.memberRole = membership.member_role
 
@@ -865,6 +876,10 @@ export async function updateStartupDiscoverySectionAction(
         revalidatePath('/workspace')
         revalidatePath('/workspace/settings')
         revalidateTag(WORKSPACE_IDENTITY_CACHE_TAG, 'max')
+
+        invalidateWorkspaceIdentityCache(userId)
+        invalidateWorkspaceBootstrapCache(userId)
+
 
         return { error: null, success: 'Startup discovery post updated.' }
     } catch (error) {
@@ -1513,6 +1528,7 @@ export async function createOrganizationInviteAction(
         const inviteLink = inviteBaseUrl ? `${inviteBaseUrl}${invitePath}` : invitePath
 
         revalidatePath('/workspace/settings')
+        revalidatePath('/workspace/invite-teams')
 
         return {
             error: null,

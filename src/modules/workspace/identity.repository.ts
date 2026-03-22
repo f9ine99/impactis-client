@@ -180,6 +180,17 @@ function setCacheEntryValue<T>(
     })
 }
 
+export function invalidateWorkspaceIdentityCache(userId: string): void {
+    const cacheKey = `identity:${userId}`
+    workspaceIdentitySnapshotCache.delete(cacheKey)
+}
+
+export function invalidateWorkspaceBootstrapCache(userId: string): void {
+    const cacheKey = `bootstrap:${userId}`
+    workspaceBootstrapSnapshotCache.delete(cacheKey)
+}
+
+
 function normalizeText(value: unknown): string | null {
     if (typeof value !== 'string') {
         return null

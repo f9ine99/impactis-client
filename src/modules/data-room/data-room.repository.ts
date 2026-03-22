@@ -220,3 +220,30 @@ export async function recordDataRoomDocumentView(params: { documentId: string; s
     return (res.data as any) ?? { error: 'Failed to record view' }
 }
 
+export type DataRoomDocumentAnalyticRow = {
+    document_id: string
+    document_title: string
+    total_views: number
+    unique_viewers: number
+    total_seconds: number
+    last_viewed_at: string | null
+}
+
+export type DataRoomAnalyticsView = {
+    startup_org_id: string
+    documents: DataRoomDocumentAnalyticRow[]
+}
+
+export async function getDataRoomAnalytics(
+    startupOrgId: string,
+): Promise<DataRoomAnalyticsView | { error: string }> {
+    const token = await getAccessToken()
+    if (!token) return { error: 'Unauthorized' }
+    const res = await apiFetchJson<DataRoomAnalyticsView | { error: string }>({
+        path: `/data-room/startups/${encodeURIComponent(startupOrgId)}/analytics`,
+        method: 'GET',
+        accessToken: token,
+    })
+    return (res.data as any) ?? { error: 'Failed to load analytics' }
+}
+

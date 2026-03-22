@@ -7,6 +7,8 @@ export {
 export {
     getWorkspaceBootstrapForCurrentUser,
     getWorkspaceIdentityForUser,
+    invalidateWorkspaceIdentityCache,
+    invalidateWorkspaceBootstrapCache,
     WORKSPACE_IDENTITY_CACHE_TAG,
 } from './identity.repository'
 

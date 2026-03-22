@@ -66,6 +66,7 @@ export default async function WorkspaceDataRoomPage() {
                         titleMutedClass={titleMutedClass}
                         featureGate={snapshotAny?.data_room_feature_gate ?? null}
                         documents={snapshotAny?.startup_data_room_documents ?? []}
+                        orgId={(membership as any)?.organization?.id ?? undefined}
                     />
                 ) : (
                     <Suspense fallback={<div className="p-8 text-center text-slate-500">Loading access panel...</div>}>

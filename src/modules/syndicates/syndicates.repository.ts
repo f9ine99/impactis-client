@@ -181,3 +181,21 @@ export async function updateSyndicateStatus(
         return { error: e instanceof Error ? e.message : 'Failed to update status' }
     }
 }
+
+export async function commitToSyndicate(syndicateId: string, amountUsd: number): Promise<{ success: boolean } | { error: string }> {
+    const token = await getAccessToken()
+    if (!token) return { error: 'Unauthorized' }
+    try {
+        const data = await apiRequest<{ success: boolean }>({
+            path: `/syndicates/${encodeURIComponent(syndicateId)}/commit`,
+            method: 'POST',
+            accessToken: token,
+            body: { amountUsd },
+            throwOnError: true,
+        })
+        if (!data) return { error: 'Failed to commit amount' }
+        return data
+    } catch (e) {
+        return { error: e instanceof Error ? e.message : 'Failed to commit amount' }
+    }
+}
